@@ -6,17 +6,18 @@ import { Question } from '../models/Question';
 
 
 dotenv.config();
+console.log("GEMINI_API_KEY desde .env:", process.env.GEMINI_API_KEY);
 if (!process.env.GEMINI_API_KEY) {
   throw new Error('La clave de API GEMINI_API_KEY no está definida en el archivo .env');
 }
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-console.log("", process.env.GEMINI_API_KEY)
+console.log("genAI instancia:", genAI);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 
 export const getQuizIdByCategory = async (name: string): Promise<number | null> => {
   const quizCategory = await QuizCategory.findOne({
-      where: { name }
+    where: { name }
   });
 
   return quizCategory ? quizCategory.quiz_id : null;
@@ -41,9 +42,11 @@ export const generateQuizQuestions = async (name: string, type: string, type_id:
   const result = await model.generateContent([
     { text: prompt }
   ]);
+  console.log("Resultado de la API:", result);
   const generatedText = result.response.text();
-  // console.log(generatedText)
+  console.log("Texto generado bruto:", generatedText);
   const cleanedText = generatedText.replace(/```json|```/g, '').trim();
+  console.log("Texto generado limpio:", cleanedText);
   try {
     const questions = JSON.parse(cleanedText);
 
@@ -73,6 +76,6 @@ export const generateQuizQuestions = async (name: string, type: string, type_id:
   } catch (error) {
     console.error('Error parsing the model response:', error);
     throw new Error('Error in the response format.');
-  }
+  }
 };
 

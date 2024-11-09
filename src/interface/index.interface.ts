@@ -23,3 +23,11 @@ export interface DecodedToken{
     user_id: number;
     username: string;
 }
+
+export interface IModule{
+    name: string;
+    image: string;
+    content: string;
+    point: number;
+    path_id:number;
+}

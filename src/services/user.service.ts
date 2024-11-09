@@ -9,7 +9,7 @@ export const allUserService = async (): Promise<IUser[]> => {
 export const updateUserService = async (id: number, data: IUser): Promise<IUser | null> => {
         const user = await User.findByPk(id);
         if (!user) {
-                throw new Error('the user does not exist')
+                throw new Error('the user does not exist yet')
         }
         const updatedUser = await user.update(data);
         return updatedUser;
