@@ -1,8 +1,10 @@
 import { Request, Response } from "express";
 import {
   calculateUserScore,
+  updateQuizCategory,
 } from "../services/quizCategory.service";
 import { generateQuestionsByType, getAllQuizCategoriesService, saveQuizScore } from "../services/quizCategory.service";
+
 
 export const createQuizScore = async (req: Request, res: Response) => {
   const { score, name } = req.body;
@@ -14,7 +16,7 @@ export const createQuizScore = async (req: Request, res: Response) => {
     if (error instanceof Error) {
       res.status(404).json({ message: error.message });
     } else {
-      res.status(500).json({ error: "Error al guardar el puntaje." });
+      res.status(500).json({ error: "Error saving score." });
     }
   }
 };
@@ -25,7 +27,7 @@ export const getQuizQuestions = async (req: Request, res: Response) => {
   
   const numericId = parseInt(type_id);
     if (isNaN(numericId)) {
-        res.status(400).json({ error: 'El ID proporcionado no es un número válido.' });
+        res.status(400).json({ error: 'The ID provided is not a valid number.' });
         return;
     }
   try {
@@ -34,17 +36,17 @@ export const getQuizQuestions = async (req: Request, res: Response) => {
     res.json({ mesage: "quiz questions and answers created and saved" });
   } catch (error:unknown) {
     if (error instanceof Error) {
-      if (error.message === 'Categoría no encontrada') {
+      if (error.message === 'Category not found') {
           res.status(404).json({ error: error.message });
-      } else if (error.message === 'Módulo no encontrado') {
+      } else if (error.message === 'Module not found') {
           res.status(404).json({ error: error.message });
-      } else if (error.message === 'Tipo inválido. Debe ser "category" o "module".') {
+      } else if (error.message === 'Invalid type. Must be "category" or "module".') {
           res.status(400).json({ error: error.message });
       } else {
           res.status(500).json({ error: error.message });
       }
   } else {
-      res.status(500).json({ error: 'Hubo un error al generar el quiz.' });
+      res.status(500).json({ error: 'There was an error generating the quiz.' });
   }
   }
 };
@@ -57,7 +59,7 @@ export const getAllQuizCategories = async (req: Request, res: Response) => {
     if (error instanceof Error) {
       res.status(404).json({ message: error.message });
     } else {
-      res.status(500).json({ error: 'Error al obtener las categorías de quiz.' });
+      res.status(500).json({ error: 'Error getting quiz categories.' });
     }
   }
 };
@@ -69,63 +71,42 @@ export const finishQuiz = async (req: Request, res: Response) => {
   const numericId = parseInt(type_id);
 
   if(!user_id || isNaN(user_id)){
-    res.status(400).json({ error: 'El ID del usuario no es válido.' });
+    res.status(400).json({ error: 'The user ID is invalid.' });
         return;
   }
   
     if (isNaN(numericId)) {
-        res.status(400).json({ error: 'El ID proporcionado no es un número válido.' });
+        res.status(400).json({ error: 'The ID provided is not a valid number.' });
         return;
     }
   if(!type_id || !userAnswers || !type || userAnswers.length === 0  ) {
-      res.status(400).json ({ error: 'Faltan datos para finalizar el quiz.' });
+      res.status(400).json ({ error: 'There is not enough data to complete the quiz.' });
   }
 
   try {
     const score = await calculateUserScore(type, numericId, userAnswers, user_id);
     
 
-    res.json({ message: "Quiz finalizado", score });
+    res.json({ message: "Quiz finished", score });
   } catch (error) {
-    console.error("Error al calcular el puntaje:", error);
-    res.status(500).json({ error: "Hubo un error al calcular el puntaje." });
+    console.error("Error calculating score:", error);
+    res.status(500).json({ error: "There was an error calculating the score." });
   }
 };
 
-// export const updateQuizScore = async (req: Request, res: Response) => {
-//   const { user_id, name, score } = req.body;
+// Controlador para actualizar una categoría de quiz
+export const updateQuizScore = async (req: Request, res: Response) => {
+  const { quiz_id } = req.params; // Obtener quiz_id de los parámetros
+  const { name, score } = req.body;
 
-//   try {
-//     // Asegurar qye ambos datos sean enviados correctamente
-//     if (!user_id || !name) {
-//       return res
-//         .status(400)
-//         .json({ error: "Faltan datos: user_id y name son obligatorios." });
-//     }
-
-//     // Buscar el quiz score correspondiente para el usuario y la categoría
-//     const existingScore = await QuizCategory.findOne({
-//       where: { user_id, name: name },
-//     });
-
-//     if (!existingScore) {
-//       return res
-//         .status(404)
-//         .json({
-//           error: "No se encontró el puntaje para este usuario y categoría.",
-//         });
-//     }
-
-//     // Actualizar el puntaje
-//     existingScore.score = score || existingScore.score;
-//     await existingScore.save();
-
-//     res.status(200).json({
-//       message: `Puntaje actualizado para el usuario ${user_id} en la categoría ${name}`,
-//       score: existingScore,
-//     });
-//   } catch (error) {
-//     console.error("Error al actualizar el puntaje:", error);
-//     res.status(500).json({ error: "Error al actualizar el puntaje." });
-//   }
-// };
+  try {
+    const updatedCategory = await updateQuizCategory(Number(quiz_id), name, score);
+    res.status(200).json(updatedCategory);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      res.status(404).json({ message: error.message });
+    } else {
+      res.status(500).json({ error: "Error updating quiz category." });
+    }
+  }
+};
