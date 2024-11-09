@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 dotenv.config();
- export const ConnectionGeminiChat = async(message:string) => {
+ export const ConnectionGeminiChat = async(message:string,history: Array<{ role: string; parts: Array<{ text: string }> }>) => {
     if (!process.env.GEMINI_API_KEY) {
         throw new Error('La clave de API GEMINI_API_KEY no está definida en el archivo .env');
       }
@@ -15,17 +15,21 @@ dotenv.config();
         }
 
         const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+        
+        const generationConfig = {
+            maxOutputTokens: 500,  // Si no se pasa, usa 100 como predeterminado
+            temperature: 0.7      // Si no se pasa, usa 0.7 como predeterminado
+        };
 
         const chat = model.startChat({
             history: [
+                ...history,
                 {
                     role:'user',
                     parts: [{ text: userMessage }]
                 }
             ],
-            generationConfig: {
-                maxOutputTokens: 100,
-              },
+            generationConfig: generationConfig
         })
         return chat
     }catch{
