@@ -41,7 +41,7 @@ Module.init({
         unique: true,
     },
     content: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
         allowNull: false
     },
     point: {
