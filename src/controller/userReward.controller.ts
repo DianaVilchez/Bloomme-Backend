@@ -31,6 +31,9 @@ export const selectReward =  async(req: Request, res: Response) => {
 
         res.status(200).json({ message: "Reward selected successfully" });
     }catch(error){
+        if(error instanceof Error){
+            res.status(400).json({ message: error.message });
+        }
         console.error("Error processing reward selection:", error);
         res.status(500).json({ error: "Internal server error" });
     }
