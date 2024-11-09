@@ -1,25 +1,40 @@
-import express, { Request, Response } from 'express';
-import {sequelize} from './config/database';
+import express, {Application,Request, Response } from 'express';
+import dotenv from 'dotenv';
+import { sequelize } from './config/database';
+import { testConnection } from './utils/testConnection';
+import cors from 'cors';
+import './models/relations';
+import { router } from './routes/index.routes';
 
-const app = express();
-const PORT = process.env.PORT || 3000;
+dotenv.config();
 
+const app:Application = express();
+const PORT = process.env.PORT_INDEX || 3000;
+
+app.use(cors())
 app.use(express.json());
 
-sequelize.authenticate()
-  .then(() => console.log('Connected to PostgreSQL'))
-  .catch((error: unknown) => {
-    if (error instanceof Error) {
-      console.error('Unable to connect:', error.message);
-    } else {
-      console.error('Unable to connect: Unknown error', error);
-    }
-  });
+router(app);
 
-app.get('/', (req: Request, res: Response) => {
-  res.send('API is working');
+app.get("/", (req: Request, res: Response) => {
+  res.send("¡Welcomeeeee to bloomme");
 });
 
-app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
-  });
+
+const startServer = async () => {
+  try {
+    await testConnection();
+    console.log("Database connected");
+
+    await sequelize.sync();
+    console.log("Database synchronized successfully!");
+
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error("Unable to connect to the database:", error);
+  }
+};
+
+startServer();
