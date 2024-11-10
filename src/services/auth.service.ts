@@ -39,14 +39,9 @@ export const registerUser = async (userData: IUser) => {
 
 
 
-export const authenticateUser = async (username: string, email: string, password: string) => {
+export const authenticateUser = async (email: string, password: string) => {
     const user = await User.findOne({
-        where: {
-            [Op.or]: [
-                { username: username },
-                { email: email }
-            ]
-        }
+        where: {email}
     });
     if (!user) {
         throw new Error('User not found');
@@ -56,7 +51,7 @@ export const authenticateUser = async (username: string, email: string, password
         throw new Error('Invalid password');
     }
 
-    const tokenUser = jwt.sign({ user_id: user.user_id, username: user.username }, JWT_SECRET as string);
+    const tokenUser = jwt.sign({ user_id: user.user_id }, JWT_SECRET as string);
     return { user, tokenUser }
 }
 
