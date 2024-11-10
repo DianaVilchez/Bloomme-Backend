@@ -7,6 +7,7 @@ import { userRewardRouter } from "./userReward";
 import { pathRouter } from "./path.routes";
 import { moduleRouter } from "./module.routes";
 import { assistantRouter } from "./assistants.routes";
+import { chatRouter } from "./gemini.chat.routes";
 
 function router(app: Application): void {
     app.use('/api', quizCategoryRouter);
@@ -17,6 +18,7 @@ function router(app: Application): void {
     app.use('/api',pathRouter);
     app.use('/api',moduleRouter);
     app.use('/api',assistantRouter)
+    app.use('/api',chatRouter)
   }
   
   export { router };
