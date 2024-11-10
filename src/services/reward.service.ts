@@ -27,6 +27,7 @@ export const updateDataReward =async (id:number,newRequiredPoints: number): Prom
 
 export const getUnlockedRewardsServices = async (userId: number): Promise<Reward[]> => {
     const user = await User.findByPk(userId);
+    console.log(user)
     if (!user) {
         throw new Error("User not found");
     }
@@ -37,6 +38,7 @@ export const getUnlockedRewardsServices = async (userId: number): Promise<Reward
     }).then(rewards => rewards.map(reward => reward.reward_id));
    
     console.log("userPoints," ,userPoints)
+    console.log("user_id received:", userId);
     const unlockedRewards = await Reward.findAll({
         where:{
             required_points:{

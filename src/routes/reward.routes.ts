@@ -3,6 +3,7 @@ import { getIdReward, getAllReward, getUnlockedRewardsForUser, storeReward, upda
 import multer from 'multer';
 import { isAuthenticated } from '../middleware/auth.middleware';
 
+
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 

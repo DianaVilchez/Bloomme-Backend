@@ -6,9 +6,12 @@ const conversationHistory = new Map<string, Array<{ role: string; parts: Array<{
 
 export const postResponseChat = async(req: Request, res: Response) => {
     const userMessage = req.body?.message as string | undefined;
-    const userId =  req.params.user_id;
-
-    const userIdStr = userId.toString(); 
+    const {user_id} = req;
+    if (user_id === undefined) {
+        res.status(400).json({ error: "Invalid user ID or reward ID" });
+        return
+    }
+    const userIdStr = user_id.toString(); 
 
         if (!userMessage) {
             res.status(400).json({ error: 'Message is required' });
