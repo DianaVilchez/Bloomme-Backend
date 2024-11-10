@@ -74,7 +74,21 @@ export const insertRewardUserServices = async(userId: number, rewardId: number,r
     return insertReward;
    
 }
-
+export const getUnlockedRewardsServices = async (userId: number): Promise<Reward[]> => {
+    const user = await User.findByPk(userId);
+    if (!user) {
+        throw new Error("User not found");
+    }
+    const userPoints = user.total_point;
+    const unlockedRewards = await Reward.findAll({
+        where:{
+            required_points:{
+                [Op.lte] :  userPoints
+            }
+        }
+    })
+    return unlockedRewards;
+}
 export const allUserRewardsServices = async(userId: number, type:string): Promise<UserReward[]>  => { 
     const user = await User.findByPk(userId);
     if (!user) {
