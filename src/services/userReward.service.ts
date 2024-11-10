@@ -45,6 +45,22 @@ export const getAvailablePoints = async (userId: number): Promise<number> => {
 }
     
 
+export const verifyRewardUserServices = async(userId: number,rewardType: string ):Promise<Reward[]> => {
+    const user = await User.findByPk(userId);
+    if (!user) {
+        throw new Error("User not found");
+    }
+    const userPoints = await getAvailablePoints(userId);
+    const unlockedRewards = await Reward.findAll({
+        where:{
+            required_points:{
+                [Op.lte] :  userPoints
+            },
+            type: rewardType
+        }
+    })
+    return unlockedRewards;
+}
 export const insertRewardUserServices = async(userId: number, rewardId: number,rewardType: string ):Promise<IUserReward> => {
     const user = await User.findByPk(userId);
     if (!user) {
