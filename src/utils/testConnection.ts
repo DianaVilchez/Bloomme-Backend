@@ -1,5 +1,6 @@
 import { sequelize }  from '../config/database';
 
+
 const testConnection = async (): Promise<void>=> {
     try {
         await sequelize.authenticate();
