@@ -102,7 +102,19 @@ export const allUserRewardsServices = async(userId: number, type:string): Promis
     });
     return allReward
 }
+export const existingRewardServices = async(userId: number, rewardId: number) => {
 
+    const existingReward = await UserReward.findOne({
+        where: {
+            user_id: userId,
+            reward_id: rewardId,
+        }
+    });
+    if (existingReward) {
+        throw new Error("Reward is already registered");
+    }
+    return existingReward
+}
 
 // export const updateTotalpointsServices = async(userId: number ,requiredPoints : number ):Promise< IUser> => {
 //     const user = await User.findByPk(userId);
