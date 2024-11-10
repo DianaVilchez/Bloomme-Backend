@@ -21,3 +21,7 @@ export interface IModule{
     point: number;
     path_id:number;
 }
+
+export interface IAssistant{
+    image:string;
+}
