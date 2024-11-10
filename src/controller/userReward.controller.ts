@@ -3,8 +3,8 @@ import { allUserRewardsServices, existingRewardServices, getUnlockedRewardsServi
 
 export const selectReward =  async(req: Request, res: Response) => {
     const { user_id } = req;
-    const rewardId = parseInt(req.params.reward_id);
-    const rewardType = req.params.reward_type;
+    const rewardId = parseInt(req.query.reward_id as string);
+    const rewardType =  req.query.reward_type as string;
     console.log(user_id)
     if (user_id === undefined ||isNaN(user_id) || isNaN(rewardId)) {
         res.status(400).json({ error: "Invalid user ID or reward ID" });
