@@ -1,9 +1,10 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
-import { User } from '../models';
+import { User,Assistant} from '../models';
 import { IUser } from '../interface/index.interface';
 import { Op } from 'sequelize';
+
 
 dotenv.config();
 
@@ -11,11 +12,17 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 
 export const registerUser = async (userData: IUser) => {
+    
     const existingUser = await User.findOne({
         where: {
             username: userData.username
         }
     });
+
+    const assistant = await Assistant.findByPk(userData.assistant_id);
+    if (!assistant) {
+      throw new Error('Assistant not found');
+    }
 
     if (existingUser) {
         throw new Error('The user name is already in use');
