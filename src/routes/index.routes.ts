@@ -15,7 +15,6 @@ function router(app: Application): void {
     app.use('/api',userRewardRouter)
     app.use('/api',pathRouter);
     app.use('/api',moduleRouter);
-
   }
   
   export { router };
