@@ -6,6 +6,10 @@ interface IUserReward{
 }
 
 export const existingRewardServices = async(userId: number, rewardId: number) => {
+    const rewardUser_id = rewardId;
+    if(rewardUser_id!){
+        throw new Error("Reward not found");
+    }
     const existingReward = await UserReward.findOne({
         where: {
             user_id: userId,

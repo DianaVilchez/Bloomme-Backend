@@ -10,6 +10,9 @@ export const getRewardbyId = async (id: number): Promise<Reward | null> => {
     const reward = await Reward.findOne({
         where: { reward_id: id}
     });
+    if(!reward) {
+        throw new Error('the reward does not exist')
+    }
     return reward;
 }
 

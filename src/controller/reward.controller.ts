@@ -36,7 +36,7 @@ try {
       type,
     });
 
-    res.status(201).json(newReward);
+    res.status(200).json(newReward);
   } catch (error) {
     console.error("Error saving image:", error);
     res.status(500).json({ error: "Error saving image" });
@@ -58,7 +58,11 @@ export const getIdReward = async(req: Request, res: Response) => {
         const reward = await getRewardbyId(rewardId);
         res.status(200).json(reward)
     } catch (error: unknown) {
-        res.status(500).json({ message: 'An unexpected error has occurred' });
+        if(error instanceof Error) {
+         res.status(400).json({ message: error.message });
+        }else{
+            res.status(500).json({ message: 'An unexpected error has occurred' });
+        }
     }
 }
 
@@ -74,7 +78,7 @@ export const updateDataRewardById = async(req: Request, res: Response) => {
     try{
         const rewardUpdate = await updateDataReward(rewardId,required_points);
         if (rewardUpdate > 0) {
-            res.status(200).json({ message: "Reward updated successfully" });
+            res.status(200).json({ message: "Reward added successfully" });
         } else {
             res.status(404).json({ message: "Reward not found" });
         }
@@ -96,8 +100,11 @@ export const  getUnlockedRewardsForUser = async(req: Request, res: Response) => 
             res.status(404).json({ message: "No rewards unlocked for this user" });
         }
     }catch(error){
-        console.error(error);
-        res.status(500).json({ message: "Server error" });
+        if(error instanceof Error) {
+            res.status(400).json({ message: error.message });
+           }else{
+               res.status(500).json({ message: 'An unexpected error has occurred' });
+           }
     }
 }
 
