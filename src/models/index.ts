@@ -1,5 +1,6 @@
 
 import { Assistant } from "./Assistant";
+import { Emotion } from "./Emotion";
 import { Module } from "./Module";
 import { Option } from "./Option";
 import { Path } from "./Path";
@@ -19,5 +20,6 @@ export {
     UserReward,
     Question,
     Option,
-    Assistant
+    Assistant,
+    Emotion
 }
