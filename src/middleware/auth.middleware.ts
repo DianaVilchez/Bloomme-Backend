@@ -5,6 +5,7 @@ import { DecodedToken } from '../interface/index.interface';
 
 export const isAuthenticated = (req: Request, resp: Response, next: NextFunction): void => {
     try {
+ 
         const secretKey = process.env.JWT_SECRET || "secreto";
         // console.log("🚀 ~ Clave secreta:", secretKey);
         const { authorization } = req.headers;
@@ -15,7 +16,7 @@ export const isAuthenticated = (req: Request, resp: Response, next: NextFunction
 
         const [type, token] = authorization.split(" ");
         // console.log("🚀 ~ Tipo de token:", type);
-        // console.log("🚀 ~ Token recibido:", token);
+        //console.log("🚀 ~ Token recibido:", token);
         // console.log("🚀 ~ authMiddleware ~ token:", token)
 
         if (type.toLowerCase() !== "bearer" || !token) {
