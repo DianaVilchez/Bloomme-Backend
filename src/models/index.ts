@@ -1,4 +1,5 @@
 
+import { Assistant } from "./Assistant";
 import { Module } from "./Module";
 import { Option } from "./Option";
 import { Path } from "./Path";
@@ -8,6 +9,7 @@ import { Reward } from "./Reward";
 import { User } from "./User";
 import { UserReward } from "./UserReward";
 
+
 export {
     Reward,
     User,
@@ -16,5 +18,6 @@ export {
     QuizCategory,
     UserReward,
     Question,
-    Option
+    Option,
+    Assistant
 }

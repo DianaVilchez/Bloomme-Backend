@@ -1,5 +1,6 @@
 import { DataTypes, Model, Optional } from 'sequelize';
 import { sequelize } from '../config/database';
+import { Assistant } from './Assistant';
 
 
 interface UserAttributes {
@@ -11,7 +12,7 @@ interface UserAttributes {
     password: string;
     total_point?: number;
     assistant_name: string;
-    assistant_image: string;
+    assistant_id: number;
 }
 
 interface UserCreationAttributes extends Optional<UserAttributes, 'user_id' | 'total_point'> { }
@@ -25,7 +26,7 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
     public password!: string;
     public total_point?: number;
     public assistant_name!: string;
-    public assistant_image!: string;
+    public assistant_id!: number;
 
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
@@ -66,9 +67,13 @@ User.init({
         type: DataTypes.STRING,
         allowNull: false
     },
-    assistant_image: {
-        type: DataTypes.STRING,
-        allowNull: false
+    assistant_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references:{
+            model: Assistant,
+            key:'assistant_id'
+        }
     }
 
 },
