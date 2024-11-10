@@ -10,7 +10,7 @@ import { assistantRouter } from "./assistants.routes";
 import { chatRouter } from "./gemini.chat.routes";
 
 function router(app: Application): void {
-    app.use('/api', quizCategoryRouter);
+    app.use('/api',quizCategoryRouter);
     app.use('/api',userRouter);
     app.use('/api',authRouter);
     app.use('/api',rewardRouter)
