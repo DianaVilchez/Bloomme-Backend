@@ -26,7 +26,7 @@ app.use((0, cors_1.default)());
 app.use(express_1.default.json());
 (0, index_routes_1.router)(app);
 app.get("/", (req, res) => {
-    res.send("¡Welcomeeeee to bloomme");
+    res.send("¡Welcomeeeee 123456 to bloomme");
 });
 const startServer = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
