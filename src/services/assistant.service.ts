@@ -1,4 +1,4 @@
-import { Assistant } from "../models/Assistant";
+import { Assistant } from "../models";
 import { IAssistant } from '../interface/index.interface';
 
 export const createAssistant = async(data:IAssistant):Promise<IAssistant> =>{
