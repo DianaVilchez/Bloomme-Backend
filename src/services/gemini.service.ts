@@ -1,6 +1,6 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import dotenv from 'dotenv';
-import { QuizCategory } from '../models';
+import { Module, QuizCategory } from '../models';
 import { Option } from '../models/Option';
 import { Question } from '../models/Question';
 
@@ -22,35 +22,66 @@ export const getQuizIdByCategory = async (name: string): Promise<number | null> 
 
   return quizCategory ? quizCategory.quiz_id : null;
 }
+export const getModuleContent = async (module_id: number): Promise<string | null> => {
+  const module = await Module.findOne({
+    where: { module_id },
+  });
+  return module ? module.content : null;
+}
 
 export const generateQuizQuestions = async (name: string, type: string, type_id: number) => {
+  let prompt: string;
+  if (type === "category") {
 
-  const prompt = `
-    Genera 3 preguntas de trivia sobre el tema: ${name}.
-    Cada pregunta debe tener 4 opciones de respuesta, con una marcada como la correcta.
-    Formatea la respuesta en JSON con el siguiente formato:
+    prompt = `
+      Generate 3 trivia questions about the topic: ${name}.
+      Each question should have 4 answer options, with one marked as correct.
+      Format the response in JSON with the following format:
     [
       {
-        "question": "Texto de la pregunta",
-        "options": ["opción1", "opción2", "opción3", "opción4"],
-        "correctAnswer": "opción correcta"
+        "question": "Question text",
+        "options": ["option1", "option2", "option3", "option4"],
+        "correctAnswer": "correct option"
       },
       ...
     ]
   `;
+  } else if (type === "module") {
+    const moduleContent = await getModuleContent(type_id);
+    if (!moduleContent) {
+      throw new Error('No se encontró el contenido del módulo');
+    }
 
-  const result = await model.generateContent([
-    { text: prompt }
-  ]);
-  console.log("Resultado de la API:", result);
-  const generatedText = result.response.text();
-  console.log("Texto generado bruto:", generatedText);
-  const cleanedText = generatedText.replace(/```json|```/g, '').trim();
-  console.log("Texto generado limpio:", cleanedText);
+    prompt = `
+      Generate 3 trivia questions based on the following module content: ${moduleContent}.
+      Each question should have 4 answer options, with one marked as correct.
+      Format the response in JSON with the following format:
+    [
+      {
+        "question": "Question text",
+        "options": ["option1", "option2", "option3", "option4"],
+        "correctAnswer": "correct option"
+      },
+      ...
+    ]
+  `;
+  } else {
+    throw new Error('Tipo inválido. Debe ser "category" o "module".');
+  }
+
+
   try {
+    const result = await model.generateContent([
+      { text: prompt }
+    ]);
+
+    const generatedText = result.response.text();
+
+    const cleanedText = generatedText.replace(/```json|```/g, '').trim();
     const questions = JSON.parse(cleanedText);
 
-    const quiz_id = await getQuizIdByCategory(name);
+    const quiz_id = type === 'category' ? await getQuizIdByCategory(name) : type_id;
+
     if (!quiz_id) {
       throw new Error('No quiz_id found for category')
     }
