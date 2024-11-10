@@ -89,10 +89,15 @@ export const updateDataRewardById = async(req: Request, res: Response) => {
 }
 
 export const  getUnlockedRewardsForUser = async(req: Request, res: Response) => {
-    const userId = parseInt(req.params.userId, 10);
-    console.log(userId)
+    const {user_id} = req;
+    // const userId = parseInt(req.params.userId, 10);
+    console.log(user_id)
+    if (user_id === undefined || isNaN(user_id)) {
+         res.status(400).json({ message: "Invalid user ID" });
+    return
+}
     try{
-        const rewardUnlocked = await getUnlockedRewardsServices(userId)
+        const rewardUnlocked = await getUnlockedRewardsServices(user_id)
         console.log(rewardUnlocked)
         if(rewardUnlocked.length > 0){
             res.status(200).json({ rewards: rewardUnlocked, message: "Rewards found successfully" });
