@@ -12,7 +12,7 @@ rewardRouter.post('/reward', upload.single('image'),storeReward);
 rewardRouter.get('/allreward',getAllReward);
 rewardRouter.get('/reward/:id',getIdReward);
 rewardRouter.put('/reward/:id',updateDataRewardById);
-rewardRouter.get('/reward/:userId/unlocked',isAuthenticated,getUnlockedRewardsForUser);
+rewardRouter.get('/reward/unlocked',isAuthenticated,getUnlockedRewardsForUser);
 
 
 export{rewardRouter}
