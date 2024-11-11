@@ -5,6 +5,6 @@ import { isAuthenticated } from '../middleware/auth.middleware';
 const userRewardRouter : Router = express.Router();
 
 userRewardRouter.get('/user-reward/select',isAuthenticated,selectReward);
-userRewardRouter.get('/user-reward/:user_id/:reward_type',allUserRewards);
+userRewardRouter.get('/user-reward/:reward_type',isAuthenticated, allUserRewards);
 
 export{userRewardRouter}
