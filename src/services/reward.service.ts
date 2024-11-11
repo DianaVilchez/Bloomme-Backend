@@ -47,14 +47,3 @@ export const getUnlockedRewardsServices = async (userId: number, rewardType: str
     })
     return unlockedRewards;
 }
-// export const getRequiredPointsServices =  async (RewardId: number): Promise<number> =>{
-//     const rewardPoint = await Reward.findOne({
-//         where: { reward_id: RewardId},
-//         attributes: ['required_points']
-//     });
-//     if(!rewardPoint){
-//         throw new Error("Reward not found");
-//     }
-//     return rewardPoint.required_points;
-//     ;
-// }
