@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getAllModulesService, saveModuleScore } from "../services/module.service";
+import { getAllModulesService, getModuleByIdService, saveModuleScore } from "../services/module.service";
 
 
 export const createModule = async (req: Request, res: Response) => {
@@ -27,3 +27,17 @@ export const getAllModules = async (req: Request, res: Response) => {
       }
     }
   };
+
+  export const getModuleByIdController = async (req: Request, res: Response) => {
+    const { module_id } = req.params;
+    try {
+        const module = await getModuleByIdService(Number(module_id)); 
+        res.status(200).json(module); 
+    } catch (error:unknown) {
+      if (error instanceof Error) {
+        res.status(500).json({ error: error.message });
+      } else {
+        res.status(500).json({ error: 'An error occurred while fetching modules.' });
+      }
+    }
+};
