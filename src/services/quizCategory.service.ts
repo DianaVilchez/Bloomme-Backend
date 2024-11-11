@@ -58,7 +58,7 @@ export const calculateUserScore = async (type: string, type_id: number, userAnsw
     });
 
     if(questions.length === 0) throw new Error ('No questions found for the specified type ID.');
-    const pointsPerQuestion = quizScore / questions.length;
+    const pointsPerQuestion = quizScore / 3;
     let totalScore = 0;
 
     // Validar respuestas
@@ -80,6 +80,7 @@ export const calculateUserScore = async (type: string, type_id: number, userAnsw
     const user = await User.findByPk(user_id);
     if (user) {
         user.total_point = (user.total_point || 0) + totalScore;
+        user.quiz_completed = (user.quiz_completed || 0) + 1;
         await user.save();
     }
 
