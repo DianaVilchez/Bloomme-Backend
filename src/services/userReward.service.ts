@@ -116,46 +116,43 @@ export const existingRewardServices = async(userId: number, rewardId: number) =>
     return existingReward
 }
 
-// export const selectUserRewardServices = async(userId: number, rewardId: number) => {
-// try{
-//     //verificar que tipo de reward es
-//     const reward = await Reward.findByPk(rewardId);
-//     if(!reward){
-//         throw new Error("Reward not found");
-//     }
-//     if (reward.type !== "avatar" && reward.type !== "background") {
-//         throw new Error("The selected reward is neither an avatar nor a background");
-//     }
-//     //si ya esta en la tabla userReward
-//     const userReward = await UserReward.findOne({
-//         where: {
-//             user_id: userId,
-//             reward_id: rewardId
-//         }
-//     });
-//     if (!userReward) {
-//         throw new Error("The user has not purchased this reward");
-//     }
-//     if (reward.type === "avatar") {
-//         await User.update(
-//             { current_avatar: rewardId },
-//             { where: { user_id: userId } }
-//         );
-//     } else if (reward.type === "background") {
-//         await User.update(
-//             { current_background: rewardId },
-//             { where: { user_id: userId } }
-//         );
-//     }
-//     return { message: `Reward selected successfully: ${reward.type}` };
+export const selectUserRewardServices = async(userId: number, rewardId: number) => {
+try{
+    //verificar que tipo de reward es
+    const reward = await Reward.findByPk(rewardId);
+    if(!reward){
+        throw new Error("Reward not found");
+    }
+    if (reward.type !== "avatar" && reward.type !== "background") {
+        throw new Error("The selected reward is neither an avatar nor a background");
+    }
+    //si ya esta en la tabla userReward
+    const userReward = await UserReward.findOne({
+        where: {
+            user_id: userId,
+            reward_id: rewardId
+        }
+    });
+    if (!userReward) {
+        throw new Error("The user has not purchased this reward");
+    }
+    const updateData = reward.type === "avatar" 
+            ? { current_avatar: reward.image } 
+            : { current_background: reward.image };
 
-// }catch(error){
-//     if (error instanceof Error) {
-//         console.error(error.message);
-//         throw error;
-//     } else {
-//         console.error("Error selecting a reward");
-//         throw new Error("Error selecting a reward");
-//     }
-// }
-// }
+        await User.update(
+            updateData,
+            { where: { user_id: userId } }
+        );
+    return { message: `Reward selected successfully: ${reward.type}` };
+
+}catch(error){
+    if (error instanceof Error) {
+        console.error(error.message);
+        throw error;
+    } else {
+        console.error("Error selecting a reward");
+        throw new Error("Error selecting a reward");
+    }
+}
+}
