@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { createEmotion } from "../services/emotion.service";
+import { createEmotion, getAllEmotions } from "../services/emotion.service";
 
 export const createEmotionController = async (req: Request, res: Response) => {
   const { name } = req.body;
@@ -13,5 +13,15 @@ export const createEmotionController = async (req: Request, res: Response) => {
     } else {
       res.status(500).json({ error: "Error creating emotion." });
     }
+  }
+};
+
+export const getEmotionsController = async (req: Request, res: Response) => {
+  try {
+    const emotions = await getAllEmotions();  
+    res.json(emotions);
+  } catch (error) {
+    console.error('Error fetching emotions:', error);
+    res.status(500).json({ error: 'Error fetching emotions from the database' });
   }
 };
