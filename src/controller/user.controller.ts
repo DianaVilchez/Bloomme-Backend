@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { allUserService, getUserScore, updateUserService } from '../services/user.service';
+import { allUserService, getUserDetailsById, updateUserService } from '../services/user.service';
 import { IUser } from '../interface/index.interface';
 
 
@@ -36,7 +36,7 @@ export const updateUserController = async (req: Request, res: Response) => {
     }
 }
 
-export const getUserScoreController = async (req: Request, res: Response) => {
+export const getUserProfileController = async (req: Request, res: Response) => {
     try {
         const user_id = req.user_id;
 
@@ -45,8 +45,8 @@ export const getUserScoreController = async (req: Request, res: Response) => {
             return;
         }
 
-        const totalScore = await getUserScore(user_id);
-        res.status(200).json(totalScore)
+        const userDetails = await getUserDetailsById(user_id);
+        res.status(200).json(userDetails)
     } catch (error: unknown) {
         if (error instanceof Error) {
             res.status(404).json({ message: error.message });

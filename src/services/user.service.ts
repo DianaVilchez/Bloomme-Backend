@@ -29,10 +29,11 @@ export const updateUserService = async (id: number, data: IUser): Promise<IUser 
         return updatedUser;
 }
 
-export const getUserScore = async (user_id: number) => {
-        const user = await User.findByPk(user_id); 
+
+export const getUserDetailsById = async (user_id: number) => {
+        const user = await User.findByPk(user_id);
         if (!user) {
                 throw new Error('User not found');
         }
-        return user.total_point;
-}
+        return user;
+};
