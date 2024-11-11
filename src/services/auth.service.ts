@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
-import { User,Assistant} from '../models';
+import { User,Assistant, UserReward} from '../models';
 import { IUser } from '../interface/index.interface';
 // import { Op } from 'sequelize';
 
@@ -53,6 +53,35 @@ export const authenticateUser = async (email: string, password: string) => {
 
     const tokenUser = jwt.sign({ user_id: user.user_id }, JWT_SECRET as string);
     return { user, tokenUser }
+}
+
+export const rewardDefaultServices= async(email: string) => {
+    const user = await User.findOne({ where: { email } });
+    if (!user) {
+        throw new Error('User not found');
+    }
+    try {
+        const [created] = await UserReward.findOrCreate({
+            where: { user_id: user.user_id, reward_type: 'avatar' }, // Busca por el user_id y reward_type
+            defaults: {
+              user_id: user.user_id, // ID del usuario
+              reward_type: 'avatar',
+              reward_id: 1,
+            },
+          });
+          console.log("hola")
+          await User.update(
+            { current_avatar: 'https://ibb.co/vVLv1PS' }, // Establecer el avatar por defecto
+            {  where: { email } } // Actualizar al usuario con este ID
+          );
+          console.log("hola2")
+       
+          return { message: 'Default avatar assigned successfully' };
+      
+}catch (error) {
+    console.error('Error assigning default avatar:', error);
+    throw new Error('Error assigning default avatar.');
+  }
 }
 
 
