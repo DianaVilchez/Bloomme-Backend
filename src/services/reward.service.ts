@@ -47,3 +47,4 @@ export const getUnlockedRewardsServices = async (userId: number, rewardType: str
     })
     return unlockedRewards;
 }
+
