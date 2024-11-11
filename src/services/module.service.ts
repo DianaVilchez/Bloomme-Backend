@@ -18,3 +18,11 @@ export const getAllModulesService = async () => {
     return modules;
 
 };
+
+export const getModuleByIdService = async (id:number) =>{
+    const module = await Module.findOne({where:{module_id:id}});
+    if(!module){
+        throw new Error(`Module with ID${id} not found`);
+    }
+    return module;
+}
