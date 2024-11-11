@@ -1,17 +1,16 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import dotenv from 'dotenv';
-import { Module, QuizCategory } from '../models';
+import { Emotion, Exercises, Module, QuizCategory } from '../models';
 import { Option } from '../models/Option';
 import { Question } from '../models/Question';
 
-
 dotenv.config();
-console.log("GEMINI_API_KEY desde .env:", process.env.GEMINI_API_KEY);
+// console.log("GEMINI_API_KEY desde .env:", process.env.GEMINI_API_KEY);
 if (!process.env.GEMINI_API_KEY) {
   throw new Error('La clave de API GEMINI_API_KEY no está definida en el archivo .env');
 }
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-console.log("genAI instancia:", genAI);
+// console.log("genAI instancia:", genAI);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 
@@ -110,3 +109,34 @@ export const generateQuizQuestions = async (name: string, type: string, type_id:
   }
 };
 
+export const generateEmotionExerciseText = async (emotion_id: number, exercises_id: number): Promise<string> => {
+
+  const emotion = await Emotion.findOne({
+    where: { emotion_id: emotion_id }
+  });
+  if (!emotion) {
+    throw new Error('Emotion not found in the database.');
+  }
+
+  const exercise = await Exercises.findOne({
+    where: { exercises_id: exercises_id }
+  });
+  if (!exercise) {
+    throw new Error('Exercise not found in the database.');
+  }
+
+  const prompt = `
+    Generate a short and motivational text for a girl or teenager who is feeling ${emotion.name}. 
+    The text should suggest doing the exercise "${exercise.name}" and briefly explain how it can help.
+  `;
+
+  try {
+    const result = await model.generateContent([{ text: prompt }]);
+    const generatedText = result.response.text();
+
+    return generatedText;
+  } catch (error) {
+    // console.error('Error generating the text:', error);
+    throw new Error('Error generating text with AI.');
+  }
+};
