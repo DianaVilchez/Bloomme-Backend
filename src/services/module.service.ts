@@ -1,4 +1,4 @@
-import { Module } from "../models";
+import { Module, Path } from "../models";
 import { IModule } from '../interface/index.interface';
 
 
@@ -25,4 +25,23 @@ export const getModuleByIdService = async (id:number) =>{
         throw new Error(`Module with ID${id} not found`);
     }
     return module;
+}
+
+export const getModulesByPathService = async(pathId:number) =>{
+    const path = await Path.findOne({
+        where: { path_id: pathId },
+        include: [
+            {
+                model: Module, 
+                as: 'Modules',
+                attributes: ['module_id', 'name', 'content'] 
+            }
+        ],
+    });
+    if(!path){
+        throw new Error(`Path with ID${pathId} not found`);
+    }
+    // console.log(path.Modules || [])
+    return path.Modules || [];
+
 }
