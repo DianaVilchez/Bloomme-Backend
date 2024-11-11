@@ -1,5 +1,6 @@
 import { User } from "../models";
 import { IUser } from '../interface/index.interface';
+import bcrypt from 'bcrypt';
 
 export const allUserService = async (): Promise<IUser[]> => {
         const allUser = await User.findAll();
@@ -11,6 +12,19 @@ export const updateUserService = async (id: number, data: IUser): Promise<IUser 
         if (!user) {
                 throw new Error('the user does not exist yet')
         }
-        const updatedUser = await user.update(data);
+        if (data.password) {
+                const salt = await bcrypt.genSalt(10);
+                data.password = await bcrypt.hash(data.password, salt);
+        }
+
+        const [affectedCount] = await User.update(data, {
+                where: { user_id: id }, 
+        });
+
+        if (affectedCount === 0) {
+                throw new Error('No user was updated.');
+        }
+        
+        const updatedUser = await User.findByPk(id);
         return updatedUser;
 }
