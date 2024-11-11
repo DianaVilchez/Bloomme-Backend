@@ -2,9 +2,9 @@ import { Request, Response } from 'express';
 import { createPathService, getPathAllService } from '../services/path.service';
 
 export const postPathController = async (req: Request, res: Response) => {
-    const { name } = req.body
+    const { name,image } = req.body
     try {
-        const newPath = await createPathService(name);
+        const newPath = await createPathService(name,image);
         res.status(201).json(newPath);
     } catch (error: unknown) {
         if (error instanceof Error) {
