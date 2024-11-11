@@ -1,5 +1,6 @@
 import { DataTypes, Model, Optional } from 'sequelize';
 import { sequelize } from '../config/database';
+import { Module } from './Module';
 
 interface PathAttributes {
     path_id: number;
@@ -16,6 +17,8 @@ class Path extends Model<PathAttributes, PathCreationAttributes> implements Path
 
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
+
+    public readonly Modules?: Module[];
 }
 
 Path.init(
