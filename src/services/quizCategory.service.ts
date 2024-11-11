@@ -26,7 +26,8 @@ export const generateQuestionsByType = async (type: string, id: number) => {
     } else {
         throw new Error('Invalid type specified. Expected "category" or "module".');
     }
-    await generateQuizQuestions(name, type, id);
+
+    return await generateQuizQuestions(name, type, id);
 };
 
 export const getAllQuizCategoriesService = async () => {
@@ -61,7 +62,6 @@ export const calculateUserScore = async (type: string, type_id: number, userAnsw
     const pointsPerQuestion = quizScore / 3;
     let totalScore = 0;
 
-    // Validar respuestas
     for (const userAnswer of userAnswers) {
         const question = questions.find(question => question.question_id === userAnswer.question_id);
         if (!question) continue;
@@ -76,7 +76,6 @@ export const calculateUserScore = async (type: string, type_id: number, userAnsw
         }
     }
 
-    // Actualizar el total de puntos del usuario
     const user = await User.findByPk(user_id);
     if (user) {
         user.total_point = (user.total_point || 0) + totalScore;
@@ -96,10 +95,9 @@ export const updateQuizCategory = async (quizId: number, name?: string, score?: 
         throw new Error(`No record found for the category with id '${quizId}'.`);
     }
 
-    // Actualizar solo los campos que se proporcionan
     if (score !== undefined) existingCategory.score = score;
     if (name) existingCategory.name = name;
 
-    await existingCategory.save(); // Guardar cambios en la base de datos
+    await existingCategory.save();
     return existingCategory;
 };

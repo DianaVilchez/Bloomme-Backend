@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
 import {
   calculateUserScore,
+  generateQuestionsByType,
   updateQuizCategory,
+  getAllQuizCategoriesService, saveQuizScore
 } from "../services/quizCategory.service";
-import { generateQuestionsByType, getAllQuizCategoriesService, saveQuizScore } from "../services/quizCategory.service";
-
 
 export const createQuizScore = async (req: Request, res: Response) => {
   const { score, name } = req.body;
@@ -21,33 +21,43 @@ export const createQuizScore = async (req: Request, res: Response) => {
   }
 };
 
-
 export const getQuizQuestions = async (req: Request, res: Response) => {
   const { type, type_id } = req.params;
-  
   const numericId = parseInt(type_id);
-    if (isNaN(numericId)) {
-        res.status(400).json({ error: 'The ID provided is not a valid number.' });
-        return;
-    }
-  try {
 
-    await generateQuestionsByType(type, numericId);
-    res.json({ mesage: "quiz questions and answers created and saved" });
-  } catch (error:unknown) {
+  if (isNaN(numericId)) {
+    res.status(400).json({ error: 'The ID provided is not a valid number.' });
+    return;
+  }
+
+  try {
+    const questionsWithOptions = await generateQuestionsByType(type, numericId);
+
+    const sanitizedQuestions = questionsWithOptions.map((question) => ({
+      question_text: question.question_text,
+      options: question.options.map((option) => ({
+        option_text: option.option_text,
+      })),
+    }));
+
+    res.json({
+      message: "Quiz questions and answers created and saved",
+      questions: sanitizedQuestions,
+    });
+  } catch (error: unknown) {
     if (error instanceof Error) {
       if (error.message === 'Category not found') {
-          res.status(404).json({ error: error.message });
+        res.status(404).json({ error: error.message });
       } else if (error.message === 'Module not found') {
-          res.status(404).json({ error: error.message });
+        res.status(404).json({ error: error.message });
       } else if (error.message === 'Invalid type. Must be "category" or "module".') {
-          res.status(400).json({ error: error.message });
+        res.status(400).json({ error: error.message });
       } else {
-          res.status(500).json({ error: error.message });
+        res.status(500).json({ error: error.message });
       }
-  } else {
+    } else {
       res.status(500).json({ error: 'There was an error generating the quiz.' });
-  }
+    }
   }
 };
 
@@ -94,9 +104,9 @@ export const finishQuiz = async (req: Request, res: Response) => {
   }
 };
 
-// Controlador para actualizar una categoría de quiz
+
 export const updateQuizScore = async (req: Request, res: Response) => {
-  const { quiz_id } = req.params; // Obtener quiz_id de los parámetros
+  const { quiz_id } = req.params; 
   const { name, score } = req.body;
 
   try {
