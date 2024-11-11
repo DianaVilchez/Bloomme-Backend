@@ -1,7 +1,7 @@
 
 import { Assistant } from "./Assistant";
 import { Emotion } from "./Emotion";
-import { Exercises } from "./Exercises";
+// import { Exercises } from "./Exercises";
 import { Module } from "./Module";
 import { Option } from "./Option";
 import { Path } from "./Path";
@@ -21,6 +21,5 @@ export {
     Question,
     Option,
     Assistant,
-    Exercises,
     Emotion
 }
