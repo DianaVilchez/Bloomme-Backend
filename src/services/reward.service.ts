@@ -31,6 +31,7 @@ export const getUnlockedRewardsServices = async (userId: number, rewardType: str
         throw new Error("User not found");
     }
     const userPoints = await getAvailablePoints(userId);
+    console.log('userPoints',userPoints)
     const unlockedRewardIds = await UserReward.findAll({
         where: { user_id: userId },
         attributes: ['reward_id'],

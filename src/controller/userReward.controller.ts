@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { allUserRewardsServices, existingRewardServices, getAvailablePoints, getUnlockedRewardsServices, insertRewardUserServices, verifyRewardUserServices } from "../services/userReward.service";
+import { allUserRewardsServices, existingRewardServices, getAvailablePoints, getUnlockedRewardsServices, insertRewardUserServices, selectUserRewardServices, verifyRewardUserServices } from "../services/userReward.service";
 
-export const selectReward =  async(req: Request, res: Response) => {
+export const insertUserReward =  async(req: Request, res: Response) => {
     const { user_id } = req;
     const rewardId = parseInt(req.query.reward_id as string);
     const rewardType =  req.query.reward_type as string;
@@ -84,6 +84,27 @@ export const pointsAvailable = async(req: Request, res: Response) => {
     }catch(error){
         console.error("Error processing reward selection:", error);
         res.status(500).json({ error: "Internal server error" });
+    }
+}
+
+export async function selectUserReward(req: Request, res: Response) {
+    const { user_id } = req;
+    const rewardId = parseInt(req.params.reward_id as string);
+    
+
+    if (user_id === undefined || isNaN(user_id) || !rewardId) {
+         res.status(400).json({ error: 'ID de usuario o ID de recompensa no válido' });
+    return}
+
+    try {
+        const result = await selectUserRewardServices(user_id, rewardId);
+        res.status(200).json(result);
+    } catch (error) {
+        if (error instanceof Error) {
+            res.status(500).json({ error: error.message });
+        } else {
+            res.status(500).json({ error: 'Error desconocido' });
+        }
     }
 }
 
