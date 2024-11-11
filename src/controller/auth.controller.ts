@@ -1,10 +1,11 @@
 import { Request, Response } from 'express';
-import { authenticateUser, registerUser } from '../services/auth.service';
+import { authenticateUser, registerUser, rewardDefaultServices } from '../services/auth.service';
 
 
 export const register = async (req: Request, res: Response) => {
     try {
         const newUser = await registerUser(req.body);
+        await rewardDefaultServices(req.body.email);
         res.status(201).json(newUser);
     } catch (error:unknown) {
         if (error instanceof Error) {
@@ -33,3 +34,6 @@ export const login = async (req: Request, res: Response) => {
     }
 
 };
+
+
+
