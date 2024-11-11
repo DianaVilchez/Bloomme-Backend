@@ -1,5 +1,6 @@
 import { DataTypes, Model, Optional } from "sequelize";
 import { sequelize } from "../config/database";
+import { Emotion } from "./Emotion";
 
 interface ExercisesAttributes {
     exercises_id: number;
@@ -32,8 +33,10 @@ Exercises.init(
         },
         emotion_id: {
             type: DataTypes.INTEGER,
-            primaryKey: true,
-            autoIncrement: true
+            references:{
+                model: Emotion,
+                key: 'emotion_id'
+            }
         },
     },
     
