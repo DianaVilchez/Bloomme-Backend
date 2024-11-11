@@ -13,6 +13,7 @@ export const getAvailablePoints = async (userId: number): Promise<number> => {
     }
 
     const totalPoints = user.total_point;
+    console.log('totalPoints',totalPoints)
 
     if (totalPoints === undefined || totalPoints === null) {
         throw new Error('El usuario no tiene puntos');
