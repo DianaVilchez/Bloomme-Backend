@@ -5,7 +5,7 @@ interface IUserReward{
     user_id:number,
     reward_id:number,
 }
-//obtener los puntos disponibles
+
 export const getAvailablePoints = async (userId: number): Promise<number> => {
     const user = await User.findByPk(userId);
     if (!user) {
@@ -115,18 +115,3 @@ export const existingRewardServices = async(userId: number, rewardId: number) =>
     }
     return existingReward
 }
-
-// export const updateTotalpointsServices = async(userId: number ,requiredPoints : number ):Promise< IUser> => {
-//     const user = await User.findByPk(userId);
-//     if(!user?.total_point){
-//         throw new Error("Not found points");
-//     }
-//     const newPoints = user?.total_point - requiredPoints
-//     if (!user) {
-//         throw new Error("User not found");
-//     }
-//     const updatePoints = await user.update(
-//         { total_point: newPoints }
-//     )
-//     return updatePoints
-// }
