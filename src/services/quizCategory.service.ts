@@ -4,7 +4,7 @@ import { generateQuizQuestions } from "./gemini.service";
 export const saveQuizScore = async (score: number, nameCategory: string) => {
     const existingScore = await QuizCategory.findOne({ where: { name: nameCategory } });
     if (existingScore) {
-            throw new Error (`A record already exists for the category name '${nameCategory}'.`)
+        throw new Error(`A record already exists for the category name '${nameCategory}'.`)
     }
     return await QuizCategory.create({ score, name: nameCategory });
 }
@@ -34,7 +34,7 @@ export const getAllQuizCategoriesService = async () => {
 };
 
 export const calculateUserScore = async (type: string, type_id: number, userAnswers: { question_id: number, answer: number }[], user_id: number) => {
-    
+
     let quizScore: number;
     if (type === 'category') {
         const quizCategory = await QuizCategory.findByPk(type_id);
@@ -57,7 +57,7 @@ export const calculateUserScore = async (type: string, type_id: number, userAnsw
         include: [{ model: Option, as: 'Options' }]
     });
 
-    if(questions.length === 0) throw new Error ('No questions found for the specified type ID.');
+    if (questions.length === 0) throw new Error('No questions found for the specified type ID.');
     const pointsPerQuestion = quizScore / 3;
     let totalScore = 0;
 
@@ -65,13 +65,13 @@ export const calculateUserScore = async (type: string, type_id: number, userAnsw
     for (const userAnswer of userAnswers) {
         const question = questions.find(question => question.question_id === userAnswer.question_id);
         if (!question) continue;
-        const correctOption = question.Options.find(option => option.is_correct === true );
-        if(!correctOption){
-            console.error (`No correct option found for question ID '${question.question_id}'`);
+        const correctOption = question.Options.find(option => option.is_correct === true);
+        if (!correctOption) {
+            console.error(`No correct option found for question ID '${question.question_id}'`);
             continue;
         }
         const selectOption = await Option.findByPk(userAnswer.answer);
-        if(selectOption?.option_id === correctOption.option_id) {
+        if (selectOption?.option_id === correctOption.option_id) {
             totalScore += pointsPerQuestion;
         }
     }
@@ -80,7 +80,9 @@ export const calculateUserScore = async (type: string, type_id: number, userAnsw
     const user = await User.findByPk(user_id);
     if (user) {
         user.total_point = (user.total_point || 0) + totalScore;
-        user.quiz_completed = (user.quiz_completed || 0) + 1;
+        if (type === 'category') {
+            user.quiz_completed = (user.quiz_completed || 0) + 1;
+        }
         await user.save();
     }
 
@@ -89,7 +91,7 @@ export const calculateUserScore = async (type: string, type_id: number, userAnsw
 
 export const updateQuizCategory = async (quizId: number, name?: string, score?: number) => {
     const existingCategory = await QuizCategory.findOne({ where: { quiz_id: quizId } });
-    
+
     if (!existingCategory) {
         throw new Error(`No record found for the category with id '${quizId}'.`);
     }
