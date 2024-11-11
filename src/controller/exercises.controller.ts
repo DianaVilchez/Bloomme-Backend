@@ -36,11 +36,11 @@ export const generateExerciseTextController = async (req: Request, res: Response
 };
 
 export const getExercisesByEmotionController = async (req: Request, res: Response) => {
-    const { emotion_id } = req.params;  // Obtener el emotion_id desde los parámetros de la ruta
+    const { emotion_id } = req.params;  
     console.log('Emotion ID:', emotion_id)
     try {
-      const exercises = await getExercisesByEmotion(Number(emotion_id));  // Obtener ejercicios por emoción
-      res.json(exercises);  // Retornar los ejercicios en formato JSON
+      const exercises = await getExercisesByEmotion(Number(emotion_id)); 
+      res.json(exercises); 
     } catch (error) {
       console.error('Error fetching exercises by emotion:', error);
       res.status(500).json({ error: 'Error fetching exercises from the database' });
