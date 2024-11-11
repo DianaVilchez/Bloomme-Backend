@@ -18,13 +18,21 @@ export const updateUserService = async (id: number, data: IUser): Promise<IUser 
         }
 
         const [affectedCount] = await User.update(data, {
-                where: { user_id: id }, 
+                where: { user_id: id },
         });
 
         if (affectedCount === 0) {
                 throw new Error('No user was updated.');
         }
-        
+
         const updatedUser = await User.findByPk(id);
         return updatedUser;
+}
+
+export const getUserScore = async (user_id: number) => {
+        const user = await User.findByPk(user_id); 
+        if (!user) {
+                throw new Error('User not found');
+        }
+        return user.total_point;
 }
