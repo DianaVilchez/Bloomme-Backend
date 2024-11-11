@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { allUserRewardsServices, existingRewardServices, getUnlockedRewardsServices, insertRewardUserServices, verifyRewardUserServices } from "../services/userReward.service";
+import { allUserRewardsServices, existingRewardServices, getAvailablePoints, getUnlockedRewardsServices, insertRewardUserServices, verifyRewardUserServices } from "../services/userReward.service";
 
 export const selectReward =  async(req: Request, res: Response) => {
     const { user_id } = req;
@@ -63,6 +63,24 @@ export const allUserRewards = async(req: Request, res: Response) => {
             reward_type: type
         }
         res.status(200).json(response);
+    }catch(error){
+        console.error("Error processing reward selection:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+}
+
+export const pointsAvailable = async(req: Request, res: Response) => {
+    // const userId = parseInt(req.params.user_id);
+    const { user_id } = req;
+
+    if (user_id === undefined ||isNaN(user_id)) {
+        res.status(400).json({ error: "Invalid user ID or reward ID" });
+        return
+    }
+    try{
+        const points = await getAvailablePoints(user_id)
+        console.log(points)
+        res.status(200).json(points);
     }catch(error){
         console.error("Error processing reward selection:", error);
         res.status(500).json({ error: "Internal server error" });
