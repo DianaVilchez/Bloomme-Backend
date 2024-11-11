@@ -9,6 +9,7 @@ import { moduleRouter } from "./module.routes";
 import { assistantRouter } from "./assistants.routes";
 import { chatRouter } from "./gemini.chat.routes";
 import { emotionRouter } from "./emotion.routes";
+import { exercisesRouter } from "./exercises.routes";
 
 function router(app: Application): void {
     app.use('/api',quizCategoryRouter);
@@ -20,7 +21,8 @@ function router(app: Application): void {
     app.use('/api',moduleRouter);
     app.use('/api',assistantRouter);
     app.use('/api',chatRouter);
-    app.use('/api',emotionRouter)
+    app.use('/api',emotionRouter);
+    app.use('/api',exercisesRouter);
   }
   
   export { router };
