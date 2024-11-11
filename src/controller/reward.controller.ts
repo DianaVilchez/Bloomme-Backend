@@ -1,6 +1,4 @@
 import { Request, Response } from "express";
-import path from "path";
-import fs from "fs-extra";
 import { Reward } from "../models";
 import crypto from "crypto";
 import {
@@ -11,14 +9,13 @@ import {
 } from "../services/reward.service";
 
 export const storeReward = async (req: Request, res: Response) => {
-  const { required_points, type } = req.body;
-  const imageFile = req.file;
+    const { required_points, type, image } = req.body;
 
-  if (!imageFile || !required_points || !type) {
+  if (!image || !required_points || !type) {
     res.status(400).json({ error: "Missing data" });
     return;
   }
-  const hash = crypto.createHash("md5").update(imageFile.buffer).digest("hex");
+  const hash = crypto.createHash("md5").update(image).digest("hex");
 
   try {
     const existingReward = await Reward.findOne({ where: { imageHash: hash } });
@@ -29,14 +26,9 @@ export const storeReward = async (req: Request, res: Response) => {
         .json({ error: "The image is already stored as a reward" });
       return;
     }
-    const fileName = `${hash}_image.jpg`;
-    const filePath = path.join(__dirname, "../uploads", fileName);
-
-    await fs.ensureDir(path.join(__dirname, "../uploads"));
-    await fs.writeFile(filePath, imageFile.buffer);
-
+    
     const newReward = await Reward.create({
-      image: filePath,
+      image: image,
       imageHash: hash,
       required_points,
       type,
