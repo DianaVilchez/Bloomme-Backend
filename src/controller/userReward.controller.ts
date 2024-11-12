@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { allUserRewardsServices, existingRewardServices, getAvailablePoints, getUnlockedRewardsServices, insertRewardUserServices, selectUserRewardServices, verifyRewardUserServices } from "../services/userReward.service";
+import { Reward } from "../models";
 
 export const insertUserReward =  async(req: Request, res: Response) => {
     const { user_id } = req;
@@ -55,13 +56,31 @@ export const allUserRewards = async(req: Request, res: Response) => {
     try{
         const allRewards = await allUserRewardsServices(user_id, type)
 
-        const rewardsIds = [...new Set(allRewards.map((reward) => reward.reward_id))]
+        // const rewardsIds = [...new Set(allRewards.map((reward) => reward.reward_id))]
 
+        // const response = {
+        //     userID: user_id,
+        //     rewards_id: rewardsIds,
+        //     reward_type: type
+        // }
+        const rewardDetails = await Promise.all(
+            allRewards.map(async (reward) => {
+                const rewardInfo = await Reward.findOne({
+                    where: { reward_id: reward.reward_id }
+                });
+                return rewardInfo ? { image: rewardInfo.image, reward_id: reward.reward_id } : null;
+            })
+        );
+
+        // Filtrar los premios válidos
+        const filteredRewards = rewardDetails.filter((reward) => reward !== null);
+
+        // Responder con los datos del usuario y las imágenes de los premios
         const response = {
             userID: user_id,
-            rewards_id: rewardsIds,
+            rewards: filteredRewards, // Ahora tienes las imágenes junto con los IDs
             reward_type: type
-        }
+        };
         res.status(200).json(response);
     }catch(error){
         console.error("Error processing reward selection:", error);
