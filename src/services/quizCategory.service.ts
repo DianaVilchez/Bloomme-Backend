@@ -103,12 +103,24 @@ export const updateQuizCategory = async (quizId: number, name?: string, score?: 
 };
 
 
-export const lastGenerateQuestion = async(type_id:number) =>{
+export const lastGenerateQuestion = async (type_id: number) => {
     const lastQuestion = await Question.findAll({
-        where:{type_id},
-        order:[['createdAt','DESC']],
-        limit:3,
-        include:[{model:Option,as:'Options'}]
+        where: { type_id },
+        order: [['createdAt', 'DESC']],
+        limit: 3,
+        include: [{ model: Option, as: 'Options' }]
     });
     return lastQuestion;
+}
+
+
+export const addScoreToUser = async (user_id: number, score: number) => {
+    const user = await User.findByPk(user_id);
+    if (!user) {
+        throw new Error('User not found')
+    }
+    user.total_point = (user.total_point || 0) + score;
+    await user.save();
+
+    return user;
 }
