@@ -38,7 +38,6 @@ Module.init({
     image: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true,
     },
     content: {
         type: DataTypes.TEXT,

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { allUserRewardsServices, existingRewardServices, getUnlockedRewardsServices, insertRewardUserServices, verifyRewardUserServices } from "../services/userReward.service";
+import { allUserRewardsServices, existingRewardServices, getAvailablePoints, getUnlockedRewardsServices, insertRewardUserServices, selectUserRewardServices, verifyRewardUserServices } from "../services/userReward.service";
 
-export const selectReward =  async(req: Request, res: Response) => {
+export const insertUserReward =  async(req: Request, res: Response) => {
     const { user_id } = req;
     const rewardId = parseInt(req.query.reward_id as string);
     const rewardType =  req.query.reward_type as string;
@@ -45,15 +45,20 @@ export const selectReward =  async(req: Request, res: Response) => {
 }
 
 export const allUserRewards = async(req: Request, res: Response) => {
-    const userId = parseInt(req.params.user_id);
+    // const userId = parseInt(req.params.user_id);
+    const { user_id } = req;
     const type =req.params.reward_type;
+    if (user_id === undefined ||isNaN(user_id)) {
+        res.status(400).json({ error: "Invalid user ID or reward ID" });
+        return
+    }
     try{
-        const allRewards = await allUserRewardsServices(userId, type)
+        const allRewards = await allUserRewardsServices(user_id, type)
 
         const rewardsIds = [...new Set(allRewards.map((reward) => reward.reward_id))]
 
         const response = {
-            userID: userId,
+            userID: user_id,
             rewards_id: rewardsIds,
             reward_type: type
         }
@@ -64,3 +69,62 @@ export const allUserRewards = async(req: Request, res: Response) => {
     }
 }
 
+export const pointsAvailable = async(req: Request, res: Response) => {
+    // const userId = parseInt(req.params.user_id);
+    const { user_id } = req;
+
+    if (user_id === undefined ||isNaN(user_id)) {
+        res.status(400).json({ error: "Invalid user ID or reward ID" });
+        return
+    }
+    try{
+        const points = await getAvailablePoints(user_id)
+        console.log(points)
+        res.status(200).json(points);
+    }catch(error){
+        console.error("Error processing reward selection:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+}
+
+export async function selectUserReward(req: Request, res: Response) {
+    const { user_id } = req;
+    const rewardId = parseInt(req.params.reward_id as string);
+    
+
+    if (user_id === undefined || isNaN(user_id) || !rewardId) {
+         res.status(400).json({ error: 'ID de usuario o ID de recompensa no válido' });
+    return}
+
+    try {
+        const result = await selectUserRewardServices(user_id, rewardId);
+        res.status(200).json(result);
+    } catch (error) {
+        if (error instanceof Error) {
+            res.status(500).json({ error: error.message });
+        } else {
+            res.status(500).json({ error: 'Error desconocido' });
+        }
+    }
+}
+
+//   export const getLockedRewardsController = async (req: Request, res: Response) => {
+//     try {
+//       const { user_id } = req;
+  
+//       if (user_id === undefined || isNaN(user_id)) {
+//          res.status(400).json({ message: 'User ID is invalid.' });
+//          return}
+  
+//       const lockedRewards = await getLockedRewards(user_id);
+
+//       if (lockedRewards.length === 0) {
+//          res.status(404).json({ message: 'No locked rewards found for this user.' });
+//          return}
+
+//        res.status(200).json({ lockedRewards });
+//        return} catch (error) {
+//       console.error('Error in getLockedRewardsController:', error);
+//        res.status(500).json({ message: 'Error fetching locked rewards.' });
+//        return}
+//   };

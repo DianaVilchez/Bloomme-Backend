@@ -1,7 +1,7 @@
 import { Path } from "../models";
 
 
-export const createPathService = async(name:string) =>{
+export const createPathService = async(name:string,image:string) =>{
 
     const existingPath = await Path.findOne({
         where: { name }
@@ -11,7 +11,7 @@ export const createPathService = async(name:string) =>{
         throw new Error(`Path with name ${name} already exists`);
     }
 
-    return await Path.create({name:name});
+    return await Path.create({name:name,image:image});
 }
 
 export const getPathAllService = async() =>{

@@ -1,9 +1,9 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
-import { User,Assistant} from '../models';
+import { User,Assistant, Reward} from '../models';
 import { IUser } from '../interface/index.interface';
-import { Op } from 'sequelize';
+// import { Op } from 'sequelize';
 
 
 dotenv.config();
@@ -39,14 +39,9 @@ export const registerUser = async (userData: IUser) => {
 
 
 
-export const authenticateUser = async (username: string, email: string, password: string) => {
+export const authenticateUser = async (email: string, password: string) => {
     const user = await User.findOne({
-        where: {
-            [Op.or]: [
-                { username: username },
-                { email: email }
-            ]
-        }
+        where: {email}
     });
     if (!user) {
         throw new Error('User not found');
@@ -56,8 +51,41 @@ export const authenticateUser = async (username: string, email: string, password
         throw new Error('Invalid password');
     }
 
-    const tokenUser = jwt.sign({ user_id: user.user_id, username: user.username }, JWT_SECRET as string);
+    const tokenUser = jwt.sign({ user_id: user.user_id }, JWT_SECRET as string);
     return { user, tokenUser }
+}
+
+export const rewardDefaultServices= async(email: string) => {
+    const user = await User.findOne({ where: { email } });
+    if (!user) {
+        throw new Error('User not found');
+    }
+    try {
+        const [reward,created] = await Reward.findOrCreate({
+            where: { type: 'avatar' }, // Busca por el user_id y reward_type
+            defaults: {
+                type: 'avatar',
+                image: 'https://ibb.co/vVLv1PS',
+                imageHash: 'default-avatar-hash',
+                required_points: 0, // URL del avatar por defecto
+              },
+          });
+          if (created) {
+            console.log('Default avatar created in rewards.');
+          } else {
+            console.log('Default avatar already exists in rewards.');
+          }
+          await User.update(
+            { current_avatar: 'https://ibb.co/vVLv1PS' }, // Establecer el avatar por defecto
+            {  where: { email } } // Actualizar al usuario con este ID
+          );
+       
+          return { message: 'Default avatar assigned successfully' };
+      
+}catch (error) {
+    console.error('Error assigning default avatar:', error);
+    throw new Error('Error assigning default avatar.');
+  }
 }
 
 

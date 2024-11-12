@@ -1,11 +1,11 @@
-import { Op } from "sequelize";
+import { Op, Sequelize } from 'sequelize';
 import { Reward, User, UserReward } from "../models";
 
 interface IUserReward{
     user_id:number,
     reward_id:number,
 }
-//obtener los puntos disponibles
+
 export const getAvailablePoints = async (userId: number): Promise<number> => {
     const user = await User.findByPk(userId);
     if (!user) {
@@ -13,6 +13,7 @@ export const getAvailablePoints = async (userId: number): Promise<number> => {
     }
 
     const totalPoints = user.total_point;
+    console.log('totalPoints',totalPoints)
 
     if (totalPoints === undefined || totalPoints === null) {
         throw new Error('El usuario no tiene puntos');
@@ -116,17 +117,44 @@ export const existingRewardServices = async(userId: number, rewardId: number) =>
     return existingReward
 }
 
-// export const updateTotalpointsServices = async(userId: number ,requiredPoints : number ):Promise< IUser> => {
-//     const user = await User.findByPk(userId);
-//     if(!user?.total_point){
-//         throw new Error("Not found points");
-//     }
-//     const newPoints = user?.total_point - requiredPoints
-//     if (!user) {
-//         throw new Error("User not found");
-//     }
-//     const updatePoints = await user.update(
-//         { total_point: newPoints }
-//     )
-//     return updatePoints
-// }
+export const selectUserRewardServices = async(userId: number, rewardId: number) => {
+try{
+    //verificar que tipo de reward es
+    const reward = await Reward.findByPk(rewardId);
+    if(!reward){
+        throw new Error("Reward not found");
+    }
+    if (reward.type !== "avatar" && reward.type !== "background") {
+        throw new Error("The selected reward is neither an avatar nor a background");
+    }
+    //si ya esta en la tabla userReward
+    const userReward = await UserReward.findOne({
+        where: {
+            user_id: userId,
+            reward_id: rewardId
+        }
+    });
+    if (!userReward) {
+        throw new Error("The user has not purchased this reward");
+    }
+    const updateData = reward.type === "avatar" 
+            ? { current_avatar: reward.image } 
+            : { current_background: reward.image };
+
+        await User.update(
+            updateData,
+            { where: { user_id: userId } }
+        );
+    return { message: `Reward selected successfully: ${reward.type}` };
+
+}catch(error){
+    if (error instanceof Error) {
+        console.error(error.message);
+        throw error;
+    } else {
+        console.error("Error selecting a reward");
+        throw new Error("Error selecting a reward");
+    }
+}
+}
+

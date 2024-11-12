@@ -13,9 +13,12 @@ interface UserAttributes {
     total_point?: number;
     assistant_name: string;
     assistant_id: number;
+    current_avatar?: string;
+    current_background?: string;
+    quiz_completed?: number;
 }
 
-interface UserCreationAttributes extends Optional<UserAttributes, 'user_id' | 'total_point'> { }
+interface UserCreationAttributes extends Optional<UserAttributes, 'user_id' | 'total_point' | 'current_avatar' | 'current_background' | 'quiz_completed'> { }
 
 class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
     public user_id!: number;
@@ -27,6 +30,9 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
     public total_point?: number;
     public assistant_name!: string;
     public assistant_id!: number;
+    public current_avatar!: string;
+    public current_background!: string;
+    public quiz_completed!: number;
 
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
@@ -70,10 +76,22 @@ User.init({
     assistant_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        references:{
+        references: {
             model: Assistant,
-            key:'assistant_id'
+            key: 'assistant_id'
         }
+    },
+    current_avatar: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
+    current_background: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
+    quiz_completed: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0
     }
 
 },
