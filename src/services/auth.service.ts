@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
-import { User,Assistant, UserReward} from '../models';
+import { User,Assistant, Reward} from '../models';
 import { IUser } from '../interface/index.interface';
 // import { Op } from 'sequelize';
 
@@ -61,20 +61,24 @@ export const rewardDefaultServices= async(email: string) => {
         throw new Error('User not found');
     }
     try {
-        const [created] = await UserReward.findOrCreate({
-            where: { user_id: user.user_id, reward_type: 'avatar' }, // Busca por el user_id y reward_type
+        const [reward,created] = await Reward.findOrCreate({
+            where: { type: 'avatar' }, // Busca por el user_id y reward_type
             defaults: {
-              user_id: user.user_id, // ID del usuario
-              reward_type: 'avatar',
-              reward_id: 1,
-            },
+                type: 'avatar',
+                image: 'https://ibb.co/vVLv1PS',
+                imageHash: 'default-avatar-hash',
+                required_points: 0, // URL del avatar por defecto
+              },
           });
-          console.log("hola")
+          if (created) {
+            console.log('Default avatar created in rewards.');
+          } else {
+            console.log('Default avatar already exists in rewards.');
+          }
           await User.update(
             { current_avatar: 'https://ibb.co/vVLv1PS' }, // Establecer el avatar por defecto
             {  where: { email } } // Actualizar al usuario con este ID
           );
-          console.log("hola2")
        
           return { message: 'Default avatar assigned successfully' };
       
