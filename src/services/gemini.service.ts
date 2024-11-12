@@ -150,10 +150,7 @@ export const generateEmotionExerciseText = async (
     throw new Error("Exercise not found in the database.");
   }
 
-  const prompt = `
-    Generate a short and motivational text for a girl or teenager who is feeling ${emotion.name}. 
-    The text should suggest doing the exercise "${exercise.name}" and briefly explain how it can help.
-  `;
+  const prompt = `Write a comforting message for a young girl or teenager who is feeling ${emotion.name}. Kindly suggest the exercise "${exercise.name}" with a step-by-step guide that is easy to follow. The message should be written in a friendly, understanding tone and explain why this exercise can help her feel better. Add words of encouragement and let her know it’s okay to feel this way. Also make this answer no more than 10 lines.`;
 
   try {
     const result = await model.generateContent([{ text: prompt }]);
