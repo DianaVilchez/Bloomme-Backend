@@ -52,12 +52,13 @@ export const generateQuizQuestions = async (
       },
       ...
     ]
-    `;
+  `;
   } else if (type === "module") {
     const moduleContent = await getModuleContent(type_id);
     if (!moduleContent) {
       throw new Error("No se encontró el contenido del módulo");
     }
+
     prompt = `
       Generate 3 trivia questions based on the following module content: ${moduleContent}.
       Each question should have 4 answer options, with one marked as correct.
@@ -70,23 +71,25 @@ export const generateQuizQuestions = async (
       },
       ...
     ]
-    `;
+  `;
   } else {
     throw new Error('Tipo inválido. Debe ser "category" o "module".');
   }
 
   try {
     const result = await model.generateContent([{ text: prompt }]);
+
     const generatedText = result.response.text();
+
     const cleanedText = generatedText.replace(/```json|```/g, "").trim();
     const questions = JSON.parse(cleanedText);
 
     const quiz_id =
       type === "category" ? await getQuizIdByCategory(name) : type_id;
+
     if (!quiz_id) {
       throw new Error("No quiz_id found for category");
     }
-
     type Option = { option_text: string; is_correct: boolean };
     type QuestionWithOptions = { question_text: string; options: Option[] };
 
@@ -108,23 +111,20 @@ export const generateQuizQuestions = async (
 
       for (let i = 0; i < options.length; i++) {
         const isCorrect = options[i] === correctAnswer;
+
         const option: Option = {
           option_text: options[i],
           is_correct: isCorrect,
         };
-
         await Option.create({
-          option_text: option.option_text,
+          option_text: options[i],
           question_id: createQuestion.question_id,
-          is_correct: option.is_correct,
+          is_correct: isCorrect,
         });
-
         questionWithOptions.options.push(option);
       }
-
       savedQuestions.push(questionWithOptions);
     }
-
     return savedQuestions;
   } catch (error) {
     // console.error("Error parsing the model response:", error);
@@ -160,5 +160,46 @@ export const generateEmotionExerciseText = async (
   } catch (error) {
     // console.error('Error generating the text:', error);
     throw new Error("Error generating text with AI.");
+  }
+};
+
+export const generateNumberEmergency = async (country: string) => {
+  const prompt = `
+      Provide the emergency numbers for the country: ${country}.
+    The response should be in JSON format with the following structure:
+
+    {
+      "country": "Country name",
+      "emergencyNumbers": {
+        "general": "General emergency number",
+        "violenceAgainstWomenAndGirls": "Number for violence against women and girls",
+        "mentalHealthCrisis": "Emergency number for anxiety/depression crisis"
+      }
+    }
+
+    Example response in JSON:
+    {
+      "country": "Argentina",
+      "emergencyNumbers": {
+        "general": "911",
+        "violenceAgainstWomenAndGirls": "144",
+        "mentalHealthCrisis": "135"
+      }
+    }
+    `;
+  try {
+    const result = await model.generateContent([{ text: prompt }]);
+    const emergencyNumbersText = result.response.text();
+    const emergencyNumbers = parseEmergencyNumbers(emergencyNumbersText);
+    return emergencyNumbers;
+  } catch (error) { }
+};
+
+const parseEmergencyNumbers = (text: string) => {
+  try {
+    const parsed = JSON.parse(text);
+    return parsed.emergencyNumbers || null;
+  } catch (error) {
+    throw new Error('Error when analyzing emergency numbers.');
   }
 };
