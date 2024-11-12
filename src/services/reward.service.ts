@@ -1,4 +1,4 @@
-import { Op } from "sequelize";
+import { Op, Sequelize } from "sequelize";
 import { Reward, User, UserReward } from "../models";
 import { getAvailablePoints } from "./userReward.service";
 
@@ -39,13 +39,16 @@ export const getUnlockedRewardsServices = async (userId: number, rewardType: str
    
     console.log("userPoints," ,userPoints)
     const unlockedRewards = await Reward.findAll({
-        where:{
-            required_points:{
-                [Op.lte] :  userPoints
+        where: {
+            required_points: {
+                [Op.lte]: userPoints,
             },
-            reward_id: { [Op.notIn]: unlockedRewardIds }
-        }
-    })
+            reward_id: { [Op.notIn]: unlockedRewardIds },
+            type: rewardType,  // Asegúrate de que el campo `type` sea el correcto en tu modelo de Reward
+        },
+    });
     return unlockedRewards;
 }
+
+
 
