@@ -108,3 +108,23 @@ export async function selectUserReward(req: Request, res: Response) {
     }
 }
 
+//   export const getLockedRewardsController = async (req: Request, res: Response) => {
+//     try {
+//       const { user_id } = req;
+  
+//       if (user_id === undefined || isNaN(user_id)) {
+//          res.status(400).json({ message: 'User ID is invalid.' });
+//          return}
+  
+//       const lockedRewards = await getLockedRewards(user_id);
+
+//       if (lockedRewards.length === 0) {
+//          res.status(404).json({ message: 'No locked rewards found for this user.' });
+//          return}
+
+//        res.status(200).json({ lockedRewards });
+//        return} catch (error) {
+//       console.error('Error in getLockedRewardsController:', error);
+//        res.status(500).json({ message: 'Error fetching locked rewards.' });
+//        return}
+//   };

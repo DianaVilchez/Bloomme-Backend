@@ -1,4 +1,4 @@
-import { Op } from "sequelize";
+import { Op, Sequelize } from 'sequelize';
 import { Reward, User, UserReward } from "../models";
 
 interface IUserReward{
@@ -157,3 +157,4 @@ try{
     }
 }
 }
+
