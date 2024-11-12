@@ -7,7 +7,7 @@ export const allUserService = async (): Promise<IUser[]> => {
         return allUser
 }
 
-export const updateUserService = async (id: number, data: { username: string; password: string; country: string; age: number; assistant_name: string; }): Promise<IUser | null> => {
+export const updateUserService = async (id: number, data: { username: string; password?: string; country: string; age: number; assistant_name: string; }): Promise<IUser | null> => {
         const user = await User.findByPk(id);
         if (!user) {
                 throw new Error('the user does not exist yet')
