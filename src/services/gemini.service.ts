@@ -41,10 +41,14 @@ export const generateQuizQuestions = async (
   let prompt: string;
   if (type === "category") {
     prompt = `
-      Generate 3 trivia questions about the topic: ${name}.
-      Each question should have 4 answer options, with one marked as correct.
-      Format the response in JSON with the following format:
-    [
+      Generate 3 fun and engaging trivia questions about the topic: ${name}., 
+      designed specifically for young girls and teenagers.      
+      Make sure each question is simple, clear, and age-appropriate, with answers that are easy to understand. 
+      The questions should focus on empowering and educating young people in a safe and positive environment, addressing important topics related to women's health, identity, and body.
+      Each question should have 4 answer options, with one clearly marked as the correct answer. 
+      The style should be friendly, encouraging, and uplifting, ensuring that the tone is supportive and respectful of sensitive topics.
+      Format the response in JSON with the following format:    
+      [
       {
         "question": "Question text",
         "options": ["option1", "option2", "option3", "option4"],
@@ -52,16 +56,21 @@ export const generateQuizQuestions = async (
       },
       ...
     ]
-    `;
+  `;
   } else if (type === "module") {
     const moduleContent = await getModuleContent(type_id);
     if (!moduleContent) {
       throw new Error("No se encontró el contenido del módulo");
     }
+
     prompt = `
-      Generate 3 trivia questions based on the following module content: ${moduleContent}.
-      Each question should have 4 answer options, with one marked as correct.
-      Format the response in JSON with the following format:
+      Generate 3 fun and engaging trivia questions about the topic: ${moduleContent}., 
+      designed specifically for young girls and teenagers.      
+      Make sure each question is simple, clear, and age-appropriate, with answers that are easy to understand. 
+      The questions should focus on empowering and educating young people in a safe and positive environment, addressing important topics related to women's health, identity, and body.
+      Each question should have 4 answer options, with one clearly marked as the correct answer. 
+      The style should be friendly, encouraging, and uplifting, ensuring that the tone is supportive and respectful of sensitive topics.
+      Format the response in JSON with the following format:    
     [
       {
         "question": "Question text",
@@ -70,23 +79,25 @@ export const generateQuizQuestions = async (
       },
       ...
     ]
-    `;
+  `;
   } else {
     throw new Error('Tipo inválido. Debe ser "category" o "module".');
   }
 
   try {
     const result = await model.generateContent([{ text: prompt }]);
+
     const generatedText = result.response.text();
+
     const cleanedText = generatedText.replace(/```json|```/g, "").trim();
     const questions = JSON.parse(cleanedText);
 
     const quiz_id =
       type === "category" ? await getQuizIdByCategory(name) : type_id;
+
     if (!quiz_id) {
       throw new Error("No quiz_id found for category");
     }
-
     type Option = { option_text: string; is_correct: boolean };
     type QuestionWithOptions = { question_text: string; options: Option[] };
 
@@ -108,26 +119,23 @@ export const generateQuizQuestions = async (
 
       for (let i = 0; i < options.length; i++) {
         const isCorrect = options[i] === correctAnswer;
+
         const option: Option = {
           option_text: options[i],
           is_correct: isCorrect,
         };
-
         await Option.create({
-          option_text: option.option_text,
+          option_text: options[i],
           question_id: createQuestion.question_id,
-          is_correct: option.is_correct,
+          is_correct: isCorrect,
         });
-
         questionWithOptions.options.push(option);
       }
-
       savedQuestions.push(questionWithOptions);
     }
-
     return savedQuestions;
   } catch (error) {
-    console.error("Error parsing the model response:", error);
+    // console.error("Error parsing the model response:", error);
     throw new Error("Error in the response format.");
   }
 };
@@ -150,10 +158,7 @@ export const generateEmotionExerciseText = async (
     throw new Error("Exercise not found in the database.");
   }
 
-  const prompt = `
-    Generate a short and motivational text for a girl or teenager who is feeling ${emotion.name}. 
-    The text should suggest doing the exercise "${exercise.name}" and briefly explain how it can help.
-  `;
+  const prompt = `Write a comforting message for a young girl or teenager who is feeling ${emotion.name}. Kindly suggest the exercise "${exercise.name}" with a step-by-step guide that is easy to follow. The message should be written in a friendly, understanding tone and explain why this exercise can help her feel better. Add words of encouragement and let her know it’s okay to feel this way. Also make this answer no more than 10 lines.`;
 
   try {
     const result = await model.generateContent([{ text: prompt }]);
@@ -163,5 +168,46 @@ export const generateEmotionExerciseText = async (
   } catch (error) {
     // console.error('Error generating the text:', error);
     throw new Error("Error generating text with AI.");
+  }
+};
+
+export const generateNumberEmergency = async (country: string) => {
+  const prompt = `
+      Provide the emergency numbers for the country: ${country}.
+    The response should be in JSON format with the following structure:
+
+    {
+      "country": "Country name",
+      "emergencyNumbers": {
+        "general": "General emergency number",
+        "violenceAgainstWomenAndGirls": "Number for violence against women and girls",
+        "mentalHealthCrisis": "Emergency number for anxiety/depression crisis"
+      }
+    }
+
+    Example response in JSON:
+    {
+      "country": "Argentina",
+      "emergencyNumbers": {
+        "general": "911",
+        "violenceAgainstWomenAndGirls": "144",
+        "mentalHealthCrisis": "135"
+      }
+    }
+    `;
+  try {
+    const result = await model.generateContent([{ text: prompt }]);
+    const emergencyNumbersText = result.response.text();
+    const emergencyNumbers = parseEmergencyNumbers(emergencyNumbersText);
+    return emergencyNumbers;
+  } catch (error) { }
+};
+
+const parseEmergencyNumbers = (text: string) => {
+  try {
+    const parsed = JSON.parse(text);
+    return parsed.emergencyNumbers || null;
+  } catch (error) {
+    throw new Error('Error when analyzing emergency numbers.');
   }
 };
