@@ -101,3 +101,14 @@ export const updateQuizCategory = async (quizId: number, name?: string, score?: 
     await existingCategory.save();
     return existingCategory;
 };
+
+
+export const lastGenerateQuestion = async(type_id:number) =>{
+    const lastQuestion = await Question.findAll({
+        where:{type_id},
+        order:[['createdAt','DESC']],
+        limit:3,
+        include:[{model:Option,as:'Options'}]
+    });
+    return lastQuestion;
+}

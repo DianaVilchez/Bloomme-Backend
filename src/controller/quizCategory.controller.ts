@@ -3,7 +3,8 @@ import {
   calculateUserScore,
   generateQuestionsByType,
   updateQuizCategory,
-  getAllQuizCategoriesService, saveQuizScore
+  getAllQuizCategoriesService, saveQuizScore,
+  lastGenerateQuestion
 } from "../services/quizCategory.service";
 
 export const createQuizScore = async (req: Request, res: Response) => {
@@ -120,3 +121,24 @@ export const updateQuizScore = async (req: Request, res: Response) => {
     }
   }
 };
+
+
+export const getLastGeneratedQuestion = async (req: Request, res: Response) => {
+  const { type_id } = req.params;
+  try {
+    const lastQuestion = await lastGenerateQuestion(Number(type_id));
+
+    if (!lastQuestion) {
+      res.status(404).json({ message: "No se encontró ninguna pregunta." });
+      return;
+    }
+
+    res.status(200).json(lastQuestion);
+  } catch (error) {
+    console.error("Error al obtener la última pregunta generada en el controlador:", error);
+    res.status(500).json({ message: "Error en el servidor." });
+  }
+};
+
+
+
