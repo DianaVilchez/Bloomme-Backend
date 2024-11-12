@@ -198,9 +198,13 @@ export const generateNumberEmergency = async (country: string) => {
   try {
     const result = await model.generateContent([{ text: prompt }]);
     const emergencyNumbersText = result.response.text();
-    const emergencyNumbers = parseEmergencyNumbers(emergencyNumbersText);
+    const cleanedTextNumber = emergencyNumbersText.replace(/```json|```/g, "").trim();
+    const emergencyNumbers = JSON.parse(cleanedTextNumber);
+    console.log("geminumber",emergencyNumbers)
     return emergencyNumbers;
-  } catch (error) { }
+  } catch (error) {
+    throw new Error("Error in the response format.");
+  }
 };
 
 const parseEmergencyNumbers = (text: string) => {
