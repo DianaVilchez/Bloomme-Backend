@@ -207,11 +207,3 @@ export const generateNumberEmergency = async (country: string) => {
   }
 };
 
-const parseEmergencyNumbers = (text: string) => {
-  try {
-    const parsed = JSON.parse(text);
-    return parsed.emergencyNumbers || null;
-  } catch (error) {
-    throw new Error('Error when analyzing emergency numbers.');
-  }
-};
