@@ -8,7 +8,7 @@ dotenv.config();
 // console.log("GEMINI_API_KEY desde .env:", process.env.GEMINI_API_KEY);
 if (!process.env.GEMINI_API_KEY) {
   throw new Error(
-    "La clave de API GEMINI_API_KEY no está definida en el archivo .env"
+    "The API key GEMINI_API_KEY is not defined in the .env file"
   );
 }
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
@@ -60,16 +60,15 @@ export const generateQuizQuestions = async (
   } else if (type === "module") {
     const moduleContent = await getModuleContent(type_id);
     if (!moduleContent) {
-      throw new Error("No se encontró el contenido del módulo");
+      throw new Error("Module content not found");
     }
     prompt = `
-      Generate 3 fun and engaging trivia questions about the topic: ${moduleContent}., 
-      designed specifically for young girls and teenagers.      
-      Make sure each question is simple, clear, and age-appropriate, with answers that are easy to understand. 
-      The questions should focus on empowering and educating young people in a safe and positive environment, addressing important topics related to women's health, identity, and body.
-      Each question should have 4 answer options, with one clearly marked as the correct answer. 
-      The style should be friendly, encouraging, and uplifting, ensuring that the tone is supportive and respectful of sensitive topics.
-      Format the response in JSON with the following format:    
+      Generate 3 engaging and supportive trivia questions based on the topic: ${moduleContent}.
+      Design each question to be accessible, age-appropriate, and specifically tailored for girls and teens.
+      Use a friendly, encouraging, and thought-provoking style to create a safe and welcoming learning experience.
+      Each question should include 4 answer options, with one clearly marked as the correct answer.
+
+      Provide the result in JSON format with the following structure:    
     [
       {
         "question": "Question text",
@@ -80,7 +79,7 @@ export const generateQuizQuestions = async (
     ]
     `;
   } else {
-    throw new Error('Tipo inválido. Debe ser "category" o "module".');
+    throw new Error('Invalid type. Must be "category" or "module".');
   }
 
   try {
