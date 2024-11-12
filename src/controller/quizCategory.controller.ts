@@ -38,6 +38,7 @@ export const getQuizQuestions = async (req: Request, res: Response) => {
       question_text: question.question_text,
       options: question.options.map((option) => ({
         option_text: option.option_text,
+        is_correct: option.is_correct
       })),
     }));
 
