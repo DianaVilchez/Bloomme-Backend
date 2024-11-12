@@ -7,7 +7,7 @@ const userRouter: Router = express.Router();
 
 userRouter.get('/user',getAllUser);
 userRouter.get('/profile',isAuthenticated,getUserProfileController)
-userRouter.put('/user/:user_id',updateUserController)
+userRouter.put('/user',isAuthenticated,updateUserController)
 userRouter.get('/profile-reward/:type',isAuthenticated,getUserCurrentRewardController)
 userRouter.get('/emergency-numbers',isAuthenticated, getEmergencyNumbersController);
 
