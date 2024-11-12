@@ -41,10 +41,14 @@ export const generateQuizQuestions = async (
   let prompt: string;
   if (type === "category") {
     prompt = `
-      Generate 3 trivia questions about the topic: ${name}.
-      Each question should have 4 answer options, with one marked as correct.
-      Format the response in JSON with the following format:
-    [
+      Generate 3 fun and engaging trivia questions about the topic: ${name}., 
+      designed specifically for young girls and teenagers.      
+      Make sure each question is simple, clear, and age-appropriate, with answers that are easy to understand. 
+      The questions should focus on empowering and educating young people in a safe and positive environment, addressing important topics related to women's health, identity, and body.
+      Each question should have 4 answer options, with one clearly marked as the correct answer. 
+      The style should be friendly, encouraging, and uplifting, ensuring that the tone is supportive and respectful of sensitive topics.
+      Format the response in JSON with the following format:    
+      [
       {
         "question": "Question text",
         "options": ["option1", "option2", "option3", "option4"],
@@ -59,9 +63,13 @@ export const generateQuizQuestions = async (
       throw new Error("No se encontró el contenido del módulo");
     }
     prompt = `
-      Generate 3 trivia questions based on the following module content: ${moduleContent}.
-      Each question should have 4 answer options, with one marked as correct.
-      Format the response in JSON with the following format:
+      Generate 3 fun and engaging trivia questions about the topic: ${moduleContent}., 
+      designed specifically for young girls and teenagers.      
+      Make sure each question is simple, clear, and age-appropriate, with answers that are easy to understand. 
+      The questions should focus on empowering and educating young people in a safe and positive environment, addressing important topics related to women's health, identity, and body.
+      Each question should have 4 answer options, with one clearly marked as the correct answer. 
+      The style should be friendly, encouraging, and uplifting, ensuring that the tone is supportive and respectful of sensitive topics.
+      Format the response in JSON with the following format:    
     [
       {
         "question": "Question text",
