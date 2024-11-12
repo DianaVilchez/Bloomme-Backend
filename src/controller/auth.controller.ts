@@ -5,7 +5,9 @@ import { authenticateUser, registerUser, rewardDefaultServices } from '../servic
 export const register = async (req: Request, res: Response) => {
     try {
         const newUser = await registerUser(req.body);
-        await rewardDefaultServices(req.body.email);
+        await rewardDefaultServices(req.body.email,'avatar');
+        await rewardDefaultServices(req.body.email,'background');
+
         res.status(201).json(newUser);
     } catch (error:unknown) {
         if (error instanceof Error) {
