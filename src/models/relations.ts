@@ -24,7 +24,7 @@ Reward.belongsToMany(User,{
 })
 //--------------------------
 
-Path.hasMany(Module,{foreignKey: 'path_id',})
+Path.hasMany(Module,{foreignKey: 'path_id',as: 'Modules'})
 Module.belongsTo(Path,{foreignKey: 'path_id'});
 
 Question.hasMany(Option, { foreignKey: 'question_id' , as: 'Options' });
