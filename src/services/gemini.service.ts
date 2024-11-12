@@ -127,7 +127,7 @@ export const generateQuizQuestions = async (
 
     return savedQuestions;
   } catch (error) {
-    console.error("Error parsing the model response:", error);
+    // console.error("Error parsing the model response:", error);
     throw new Error("Error in the response format.");
   }
 };
