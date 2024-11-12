@@ -55,18 +55,32 @@ export const authenticateUser = async (email: string, password: string) => {
     return { user, tokenUser }
 }
 
-export const rewardDefaultServices= async(email: string) => {
+export const rewardDefaultServices= async(email: string, reward_type:'avatar' | 'background') => {
     const user = await User.findOne({ where: { email } });
     if (!user) {
         throw new Error('User not found');
+    }
+    let defaultImage = '';
+    let defaultImageHash = '';
+    let updateField = '';
+
+    // Verificar el tipo de reward y asignar valores predeterminados
+    if (reward_type === 'avatar') {
+        defaultImage = 'https://i.ibb.co/FJdG9gH/15.png';  // URL del avatar por defecto
+        defaultImageHash = 'default-avatar-hash1';  // Hash del avatar
+        updateField = 'current_avatar';  // Campo a actualizar en la tabla User
+    } else if (reward_type === 'background') {
+        defaultImage = 'https://i.ibb.co/1nYTMLh/23.png';  // URL del background por defecto
+        defaultImageHash = 'default-background-hash2';  // Hash del background
+        updateField = 'current_background';  // Campo a actualizar en la tabla User
     }
     try {
         const [reward,created] = await Reward.findOrCreate({
             where: { type: 'avatar' }, // Busca por el user_id y reward_type
             defaults: {
-                type: 'avatar',
-                image: 'https://ibb.co/vVLv1PS',
-                imageHash: 'default-avatar-hash',
+                type: reward_type,
+                image: 'defaultImage',
+                imageHash: 'defaultImageHash',
                 required_points: 0, // URL del avatar por defecto
               },
           });
@@ -76,9 +90,9 @@ export const rewardDefaultServices= async(email: string) => {
             console.log('Default avatar already exists in rewards.');
           }
           await User.update(
-            { current_avatar: 'https://ibb.co/vVLv1PS' }, // Establecer el avatar por defecto
-            {  where: { email } } // Actualizar al usuario con este ID
-          );
+            { [updateField]: defaultImage },  // Establecer la imagen por defecto
+            { where: { email } } // Actualizar al usuario con este email
+        );
        
           return { message: 'Default avatar assigned successfully' };
       
