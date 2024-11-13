@@ -41,7 +41,6 @@ export const getModulesByPathService = async(pathId:number) =>{
     if(!path){
         throw new Error(`Path with ID${pathId} not found`);
     }
-    // console.log(path.Modules || [])
     return path.Modules || [];
 
 }

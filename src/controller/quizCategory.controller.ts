@@ -3,7 +3,9 @@ import {
   calculateUserScore,
   generateQuestionsByType,
   updateQuizCategory,
-  getAllQuizCategoriesService, saveQuizScore
+  getAllQuizCategoriesService, saveQuizScore,
+  lastGenerateQuestion,
+  addScoreToUser
 } from "../services/quizCategory.service";
 
 export const createQuizScore = async (req: Request, res: Response) => {
@@ -37,6 +39,7 @@ export const getQuizQuestions = async (req: Request, res: Response) => {
       question_text: question.question_text,
       options: question.options.map((option) => ({
         option_text: option.option_text,
+        is_correct: option.is_correct
       })),
     }));
 
@@ -75,27 +78,27 @@ export const getAllQuizCategories = async (req: Request, res: Response) => {
 };
 
 export const finishQuiz = async (req: Request, res: Response) => {
-  const { userAnswers} = req.body;
+  const { userAnswers } = req.body;
   const { type, type_id } = req.params;
   const { user_id } = req;
   const numericId = parseInt(type_id);
 
-  if(!user_id || isNaN(user_id)){
+  if (!user_id || isNaN(user_id)) {
     res.status(400).json({ error: 'The user ID is invalid.' });
-        return;
+    return;
   }
-  
-    if (isNaN(numericId)) {
-        res.status(400).json({ error: 'The ID provided is not a valid number.' });
-        return;
-    }
-  if(!type_id || !userAnswers || !type || userAnswers.length === 0  ) {
-      res.status(400).json ({ error: 'There is not enough data to complete the quiz.' });
+
+  if (isNaN(numericId)) {
+    res.status(400).json({ error: 'The ID provided is not a valid number.' });
+    return;
+  }
+  if (!type_id || !userAnswers || !type || userAnswers.length === 0) {
+    res.status(400).json({ error: 'There is not enough data to complete the quiz.' });
   }
 
   try {
     const score = await calculateUserScore(type, numericId, userAnswers, user_id);
-    
+
 
     res.json({ message: "Quiz finished", score });
   } catch (error) {
@@ -106,7 +109,7 @@ export const finishQuiz = async (req: Request, res: Response) => {
 
 
 export const updateQuizScore = async (req: Request, res: Response) => {
-  const { quiz_id } = req.params; 
+  const { quiz_id } = req.params;
   const { name, score } = req.body;
 
   try {
@@ -120,3 +123,57 @@ export const updateQuizScore = async (req: Request, res: Response) => {
     }
   }
 };
+
+
+export const getLastGeneratedQuestion = async (req: Request, res: Response) => {
+  const { type_id } = req.params;
+  try {
+    const lastQuestion = await lastGenerateQuestion(Number(type_id));
+
+    if (!lastQuestion) {
+      res.status(404).json({ message: "No question found." });
+      return;
+    }
+
+    res.status(200).json(lastQuestion);
+  } catch (error) {
+    if (error instanceof Error) {
+      res.status(404).json({ message: error.message });
+    } else {
+      res.status(500).json({ error: "Error updating quiz category." });
+    }
+  }
+};
+
+
+export const submitScore = async (req: Request, res: Response) => {
+  const { score } = req.body;
+  const { type, type_id } = req.params
+  const user_id = req.user_id;
+
+  if (!user_id || isNaN(user_id)) {
+    res.status(400).json({ error: 'The user ID is invalid.' });
+    return;
+  }
+
+  if (!type_id || !type) {
+    res.status(400).json({ error: 'There is not enough data to complete the quiz.' });
+    return;
+  }
+
+  try {
+    const updatedUser = await addScoreToUser(user_id, score,type);
+    res.status(200).json({
+      message: 'Score submitted successfully.',
+      user: updatedUser
+    })
+  } catch (error) {
+    if (error instanceof Error) {
+      res.status(404).json({ message: error.message });
+    } else {
+      res.status(500).json({ error: "Error updating quiz category." });
+    }
+  }
+}
+
+

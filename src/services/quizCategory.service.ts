@@ -101,3 +101,29 @@ export const updateQuizCategory = async (quizId: number, name?: string, score?: 
     await existingCategory.save();
     return existingCategory;
 };
+
+
+export const lastGenerateQuestion = async (type_id: number) => {
+    const lastQuestion = await Question.findAll({
+        where: { type_id },
+        order: [['createdAt', 'DESC']],
+        limit: 3,
+        include: [{ model: Option, as: 'Options' }]
+    });
+    return lastQuestion;
+}
+
+
+export const addScoreToUser = async (user_id: number, score: number,type:string) => {
+    const user = await User.findByPk(user_id);
+    if (!user) {
+        throw new Error('User not found')
+    }
+    user.total_point = (user.total_point || 0) + score;
+    if(type === 'category'){
+        user.quiz_completed = (user.quiz_completed || 0) + 1;
+    }
+    await user.save();
+
+    return user;
+}

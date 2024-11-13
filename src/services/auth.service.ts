@@ -3,7 +3,6 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import { User,Assistant, Reward} from '../models';
 import { IUser } from '../interface/index.interface';
-// import { Op } from 'sequelize';
 
 
 dotenv.config();
@@ -55,19 +54,32 @@ export const authenticateUser = async (email: string, password: string) => {
     return { user, tokenUser }
 }
 
-export const rewardDefaultServices= async(email: string) => {
+export const rewardDefaultServices= async(email: string, reward_type:'avatar' | 'background') => {
     const user = await User.findOne({ where: { email } });
     if (!user) {
         throw new Error('User not found');
     }
+    let defaultImage = '';
+    let defaultImageHash = '';
+    let updateField = '';
+
+    if (reward_type === 'avatar') {
+        defaultImage = 'https://i.ibb.co/FJdG9gH/15.png'; 
+        defaultImageHash = 'default-avatar-hash1'; 
+        updateField = 'current_avatar';  
+    } else if (reward_type === 'background') {
+        defaultImage = 'https://i.ibb.co/1nYTMLh/23.png';  
+        defaultImageHash = 'default-background-hash2';  
+        updateField = 'current_background'; 
+    }
     try {
         const [reward,created] = await Reward.findOrCreate({
-            where: { type: 'avatar' }, // Busca por el user_id y reward_type
+            where: { type: 'avatar' }, 
             defaults: {
-                type: 'avatar',
-                image: 'https://ibb.co/vVLv1PS',
-                imageHash: 'default-avatar-hash',
-                required_points: 0, // URL del avatar por defecto
+                type: reward_type,
+                image: 'defaultImage',
+                imageHash: 'defaultImageHash',
+                required_points: 0, 
               },
           });
           if (created) {
@@ -76,9 +88,9 @@ export const rewardDefaultServices= async(email: string) => {
             console.log('Default avatar already exists in rewards.');
           }
           await User.update(
-            { current_avatar: 'https://ibb.co/vVLv1PS' }, // Establecer el avatar por defecto
-            {  where: { email } } // Actualizar al usuario con este ID
-          );
+            { [updateField]: defaultImage },  
+            { where: { email } } 
+        );
        
           return { message: 'Default avatar assigned successfully' };
       

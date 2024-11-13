@@ -17,8 +17,8 @@ dotenv.config();
         const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
         
         const generationConfig = {
-            maxOutputTokens: 500,  // Si no se pasa, usa 100 como predeterminado
-            temperature: 0.7      // Si no se pasa, usa 0.7 como predeterminado
+            maxOutputTokens: 500,  
+            temperature: 0.7      
         };
 
         const chat = model.startChat({
