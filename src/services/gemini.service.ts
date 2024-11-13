@@ -5,14 +5,12 @@ import { Option } from "../models/Option";
 import { Question } from "../models/Question";
 
 dotenv.config();
-// console.log("GEMINI_API_KEY desde .env:", process.env.GEMINI_API_KEY);
 if (!process.env.GEMINI_API_KEY) {
   throw new Error(
     "The API key GEMINI_API_KEY is not defined in the .env file"
   );
 }
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-// console.log("genAI instancia:", genAI);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 export const getQuizIdByCategory = async (
@@ -134,7 +132,6 @@ export const generateQuizQuestions = async (
     }
     return savedQuestions;
   } catch (error) {
-    // console.error("Error parsing the model response:", error);
     throw new Error("Error in the response format.");
   }
 };
@@ -165,7 +162,6 @@ export const generateEmotionExerciseText = async (
 
     return generatedText;
   } catch (error) {
-    // console.error('Error generating the text:', error);
     throw new Error("Error generating text with AI.");
   }
 };
@@ -206,7 +202,6 @@ export const generateNumberEmergency = async (country: string) => {
       mentalHealthCrisis: emergencyNumbers.emergencyNumbers.mentalHealthCrisis || "Not available",
     };
 
-    // console.log("geminumber",emergencyNumbers)
     return emergencyNumbers;
   } catch (error) {
     throw new Error("Error in the response format.");

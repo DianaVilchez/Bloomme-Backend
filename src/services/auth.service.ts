@@ -3,7 +3,6 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import { User,Assistant, Reward} from '../models';
 import { IUser } from '../interface/index.interface';
-// import { Op } from 'sequelize';
 
 
 dotenv.config();

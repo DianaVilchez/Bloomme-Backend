@@ -9,14 +9,14 @@ interface IUserReward{
 export const getAvailablePoints = async (userId: number): Promise<number> => {
     const user = await User.findByPk(userId);
     if (!user) {
-        throw new Error('Usuario no encontrado');
+        throw new Error('Usuario not found');
     }
 
     const totalPoints = user.total_point;
     console.log('totalPoints',totalPoints)
 
     if (totalPoints === undefined || totalPoints === null) {
-        throw new Error('El usuario no tiene puntos');
+        throw new Error('The user has no points');
     }
 
     const userRewards = await UserReward.findAll({
@@ -119,7 +119,6 @@ export const existingRewardServices = async(userId: number, rewardId: number) =>
 
 export const selectUserRewardServices = async(userId: number, rewardId: number) => {
 try{
-    //verificar que tipo de reward es
     const reward = await Reward.findByPk(rewardId);
     if(!reward){
         throw new Error("Reward not found");
@@ -127,7 +126,6 @@ try{
     if (reward.type !== "avatar" && reward.type !== "background") {
         throw new Error("The selected reward is neither an avatar nor a background");
     }
-    //si ya esta en la tabla userReward
     const userReward = await UserReward.findOne({
         where: {
             user_id: userId,

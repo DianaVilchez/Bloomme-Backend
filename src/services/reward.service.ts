@@ -44,7 +44,7 @@ export const getUnlockedRewardsServices = async (userId: number, rewardType: str
                 [Op.lte]: userPoints,
             },
             reward_id: { [Op.notIn]: unlockedRewardIds },
-            type: rewardType,  // Asegúrate de que el campo `type` sea el correcto en tu modelo de Reward
+            type: rewardType,  
         },
     });
     return unlockedRewards;
