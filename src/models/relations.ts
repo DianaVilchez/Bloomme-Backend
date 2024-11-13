@@ -10,7 +10,6 @@ import { Reward } from "./Reward";
 import { User } from "./User";
 
 
-//Reacion de muchos a muchos
 User.belongsToMany(Reward,{
     through: 'user_reward',
     foreignKey: 'user_id',
@@ -22,7 +21,6 @@ Reward.belongsToMany(User,{
     foreignKey: 'reward_id',
     otherKey: 'user_id'
 })
-//--------------------------
 
 Path.hasMany(Module,{foreignKey: 'path_id',as: 'Modules'})
 Module.belongsTo(Path,{foreignKey: 'path_id'});
