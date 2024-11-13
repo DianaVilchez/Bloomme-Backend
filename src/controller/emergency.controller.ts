@@ -16,11 +16,12 @@ export const getEmergencyNumbersController = async (req: Request, res: Response)
     } catch (error) {
         if (error instanceof Error) {
             res.status(500).json({
-                error: error.message, 
+                error: error.message,
+            });
+        } else {
+            res.status(500).json({
+                error: 'An unexpected error occurred while processing your request.',
             });
         }
-        res.status(500).json({
-            error: 'An unexpected error occurred while processing your request.',
-        });
     }
 };

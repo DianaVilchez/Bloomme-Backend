@@ -180,7 +180,7 @@ export const generateNumberEmergency = async (country: string) => {
       "emergencyNumbers": {
         "general": "General emergency number",
         "violenceAgainstWomenAndGirls": "Number for violence against women and girls",
-        "mentalHealthCrisis": "Emergency number for anxiety/depression crisis"
+        "mentalHealthCrisis": "Emergency number for anxiety/depression crisis (or 'Not available' if not available)"
       }
     }
 
@@ -197,16 +197,19 @@ export const generateNumberEmergency = async (country: string) => {
   try {
     const result = await model.generateContent([{ text: prompt }]);
     const emergencyNumbersText = result.response.text();
-    const emergencyNumbers = parseEmergencyNumbers(emergencyNumbersText);
-    return emergencyNumbers;
-  } catch (error) { }
-};
+    const cleanedTextNumber = emergencyNumbersText.replace(/```json|```/g, "").trim();
+    const emergencyNumbers = JSON.parse(cleanedTextNumber);
 
-const parseEmergencyNumbers = (text: string) => {
-  try {
-    const parsed = JSON.parse(text);
-    return parsed.emergencyNumbers || null;
+    emergencyNumbers.emergencyNumbers = {
+      general: emergencyNumbers.emergencyNumbers.general || "Not available",
+      violenceAgainstWomenAndGirls: emergencyNumbers.emergencyNumbers.violenceAgainstWomenAndGirls || "Not available",
+      mentalHealthCrisis: emergencyNumbers.emergencyNumbers.mentalHealthCrisis || "Not available",
+    };
+
+    // console.log("geminumber",emergencyNumbers)
+    return emergencyNumbers;
   } catch (error) {
-    throw new Error('Error when analyzing emergency numbers.');
+    throw new Error("Error in the response format.");
   }
 };
+
