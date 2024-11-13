@@ -2,7 +2,6 @@ import { ConnectionGeminiChat } from "../services/gemini.chat.service";
 import { Request, Response } from 'express'; 
 
 const conversationHistory = new Map<string, Array<{ role: string; parts: Array<{ text: string }> }>>();
-// const conversationHistory = new Map();
 
 export const postResponseChat = async(req: Request, res: Response) => {
     const userMessage = req.body?.message as string | undefined;
@@ -30,7 +29,6 @@ export const postResponseChat = async(req: Request, res: Response) => {
     const response = await result.response;
     const modelReply = response.text();
 
-     // Almacena la respuesta en el historial
         userHistory.push(
             { role: 'user', parts: [{ text: userMessage }] },
             { role: 'model', parts: [{ text: modelReply }] }

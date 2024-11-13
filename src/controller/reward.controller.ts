@@ -92,7 +92,6 @@ export const getUnlockedRewardsForUser = async (
 ) => {
   const { user_id } = req;
   const rewardType = req.query.type as string; 
-  // const userId = parseInt(req.params.userId, 10);
   console.log(user_id);
   if (user_id === undefined || isNaN(user_id)) {
     res.status(400).json({ message: "Invalid user ID" });

@@ -16,7 +16,6 @@ export const getAllUser = async (req: Request, res: Response) => {
 
 export const updateUserController = async (req: Request, res: Response) => {
     const user_id = req.user_id;
-    // const id = Number(user_id);
     if (!user_id) {
         res.status(400).json({ message: 'User ID is missing from token' });
         return;

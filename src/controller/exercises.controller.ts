@@ -21,10 +21,6 @@ export const createExerciseController = async (req: Request, res: Response) => {
 export const generateExerciseTextController = async (req: Request, res: Response) => {
     const { emotion_id, exercises_id } = req.query;
   
-    // if (!emotion_id || !exercises_id) {
-    //   return res.status(400).json({ error: 'Emotion ID and Exercise ID are required' });
-    // }
-  
     try {
       const generatedText = await generateEmotionExerciseText(Number(emotion_id), Number(exercises_id));
   

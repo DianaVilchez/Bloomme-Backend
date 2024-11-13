@@ -131,7 +131,7 @@ export const getLastGeneratedQuestion = async (req: Request, res: Response) => {
     const lastQuestion = await lastGenerateQuestion(Number(type_id));
 
     if (!lastQuestion) {
-      res.status(404).json({ message: "No se encontró ninguna pregunta." });
+      res.status(404).json({ message: "No question found." });
       return;
     }
 
