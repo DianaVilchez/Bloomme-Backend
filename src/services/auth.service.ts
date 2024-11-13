@@ -64,24 +64,23 @@ export const rewardDefaultServices= async(email: string, reward_type:'avatar' | 
     let defaultImageHash = '';
     let updateField = '';
 
-    // Verificar el tipo de reward y asignar valores predeterminados
     if (reward_type === 'avatar') {
-        defaultImage = 'https://i.ibb.co/FJdG9gH/15.png';  // URL del avatar por defecto
-        defaultImageHash = 'default-avatar-hash1';  // Hash del avatar
-        updateField = 'current_avatar';  // Campo a actualizar en la tabla User
+        defaultImage = 'https://i.ibb.co/FJdG9gH/15.png'; 
+        defaultImageHash = 'default-avatar-hash1'; 
+        updateField = 'current_avatar';  
     } else if (reward_type === 'background') {
-        defaultImage = 'https://i.ibb.co/1nYTMLh/23.png';  // URL del background por defecto
-        defaultImageHash = 'default-background-hash2';  // Hash del background
-        updateField = 'current_background';  // Campo a actualizar en la tabla User
+        defaultImage = 'https://i.ibb.co/1nYTMLh/23.png';  
+        defaultImageHash = 'default-background-hash2';  
+        updateField = 'current_background'; 
     }
     try {
         const [reward,created] = await Reward.findOrCreate({
-            where: { type: 'avatar' }, // Busca por el user_id y reward_type
+            where: { type: 'avatar' }, 
             defaults: {
                 type: reward_type,
                 image: 'defaultImage',
                 imageHash: 'defaultImageHash',
-                required_points: 0, // URL del avatar por defecto
+                required_points: 0, 
               },
           });
           if (created) {
@@ -90,8 +89,8 @@ export const rewardDefaultServices= async(email: string, reward_type:'avatar' | 
             console.log('Default avatar already exists in rewards.');
           }
           await User.update(
-            { [updateField]: defaultImage },  // Establecer la imagen por defecto
-            { where: { email } } // Actualizar al usuario con este email
+            { [updateField]: defaultImage },  
+            { where: { email } } 
         );
        
           return { message: 'Default avatar assigned successfully' };
