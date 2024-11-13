@@ -155,14 +155,14 @@ export const submitScore = async (req: Request, res: Response) => {
     res.status(400).json({ error: 'The user ID is invalid.' });
     return;
   }
-  
+
   if (!type_id || !type) {
     res.status(400).json({ error: 'There is not enough data to complete the quiz.' });
     return;
   }
 
   try {
-    const updatedUser = await addScoreToUser(user_id, score);
+    const updatedUser = await addScoreToUser(user_id, score,type);
     res.status(200).json({
       message: 'Score submitted successfully.',
       user: updatedUser
