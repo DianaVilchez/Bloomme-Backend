@@ -89,7 +89,7 @@ export const allUserRewards = async(req: Request, res: Response) => {
 }
 
 export const pointsAvailable = async(req: Request, res: Response) => {
-    // const userId = parseInt(req.params.user_id);
+    
     const { user_id } = req;
 
     if (user_id === undefined ||isNaN(user_id)) {
